@@ -28,16 +28,19 @@ lb.innerHTML = `
   <button class="lb-next" aria-label="Next photo">&#8594;</button>
   <div class="lb-frame">
     <img class="lb-img" src="" alt="" />
+    <p class="lb-caption"></p>
   </div>
 `;
 document.body.appendChild(lb);
 
 const lbImg = lb.querySelector(".lb-img");
+const lbCaption = lb.querySelector(".lb-caption");
 
 function open(index) {
   current = (index + imgs.length) % imgs.length;
   lbImg.src = imgs[current].src;
   lbImg.alt = imgs[current].alt;
+  lbCaption.innerHTML = imgs[current].dataset.caption || "";
   lb.classList.add("is-open");
   document.body.style.overflow = "hidden";
 }

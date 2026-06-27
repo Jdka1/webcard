@@ -351,3 +351,49 @@ body.photo-page {
 .lb-next:hover {
   color: var(--text);
 }
+
+.lb-caption {
+  margin: 14px 0 0;
+  color: var(--muted);
+  font-family: var(--font);
+  font-size: 0.78rem;
+  letter-spacing: 0.02em;
+  text-align: center;
+}
+
+/* ── Photo bio ────────────────────────────────── */
+
+.photo-bio {
+  max-width: 560px;
+  margin: 40px auto 80px;
+  padding: 0 24px;
+  border-top: 1px solid var(--dim);
+  padding-top: 40px;
+}
+
+.photo-bio-text {
+  color: var(--muted);
+  font-family: var(--font);
+  font-size: 0.8rem;
+  line-height: 1.75;
+  letter-spacing: 0.01em;
+  margin: 0 0 18px;
+}
+
+.photo-bio-contact {
+  color: var(--muted);
+  font-family: var(--font);
+  font-size: 0.78rem;
+  letter-spacing: 0.01em;
+  margin: 0;
+}
+
+.photo-bio-contact a {
+  color: var(--accent);
+  text-decoration: none;
+  transition: color 140ms ease;
+}
+
+.photo-bio-contact a:hover {
+  color: var(--text);
+}
