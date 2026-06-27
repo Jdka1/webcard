@@ -2,6 +2,13 @@
 
 Personal website for Aryan Mehra. Minimalist dark webcard: name, role, experience table, social links.
 
+## Deploying
+
+1. Vercel project settings should use Framework Preset `Other`, no build command, and output directory `.`.
+2. Keep `vercel.json` committed. It forces Vercel to serve the repo root, which is required because `index.html` lives at the root while `public/` only stores assets.
+3. Deploy by committing changes to `main` and pushing to `origin`: `git push origin main`.
+4. After the Vercel deployment is ready, verify `https://www.staryan.com` returns `200` and `https://staryan.com` redirects to `www`.
+
 ## Stack
 
 Plain HTML/CSS with no build step. Served statically.
@@ -12,15 +19,12 @@ photography/index.html    — photography sub-page
 src/styles.css            — all styles (main + photo page)
 src/gallery.js            — marquee scroll + lightbox logic
 public/photography/       — full-resolution photo assets
+public/favicon.jpeg       — favicon copied from `../webcard-v2/public/favicon.jpeg`
 TODO.md                   — small markdown task list
 vercel.json               — Vercel static deployment config; force `Other` preset and repo-root output
 ```
 
 No framework. No bundler.
-
-## Deployment
-
-- Vercel must serve the repo root (`outputDirectory: "."`) because `index.html` lives at the root while `public/` only contains static photo assets. Without this override, Vercel's `Other` preset can choose `public/` as the output directory and production will 404 at `/`.
 
 ## Running locally
 
@@ -53,7 +57,7 @@ education
 previously
 ├─ Palantir Meritocracy Fellow
 ├─ Sauron  Machine Learning Engineer
-├─ Hosted ForgeHacks Consumer AI
+├─ Hosted ForgeHacks Consumer AI Hackathon
 └─ Oncept Trading LLC FTR Trading · Data Eng
 
 ─────────────────────────────
