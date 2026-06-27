@@ -127,6 +127,32 @@ h1 {
   color: var(--accent);
 }
 
+/* ── Pages ────────────────────────────────────── */
+
+.pages {
+  display: flex;
+  gap: 0 22px;
+}
+
+.pages a {
+  color: var(--text);
+  font-family: var(--font);
+  font-size: clamp(0.78rem, 1.8vw, 0.86rem);
+  letter-spacing: 0.01em;
+  padding: 4px 0;
+  text-decoration: none;
+  transition: color 140ms ease;
+}
+
+.pages a::after {
+  content: " →";
+  color: var(--accent);
+}
+
+.pages a:hover {
+  color: var(--accent);
+}
+
 /* ── Links ────────────────────────────────────── */
 
 .links {
@@ -174,5 +200,66 @@ h1 {
   .row {
     grid-template-columns: 84px 1fr;
     gap: 14px;
+  }
+}
+
+/* ── Photography page ─────────────────────────── */
+
+body.photo-page {
+  display: block;
+  min-height: 100svh;
+  padding: 0;
+}
+
+.photo-nav {
+  position: sticky;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 10;
+  width: 100%;
+  padding: 18px 24px;
+  background: rgba(14, 14, 14, 0.88);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--dim);
+  box-sizing: border-box;
+}
+
+.back-link {
+  color: var(--muted);
+  font-family: var(--font);
+  font-size: 0.82rem;
+  text-decoration: none;
+  letter-spacing: 0.01em;
+  transition: color 140ms ease;
+}
+
+.back-link:hover {
+  color: var(--text);
+}
+
+.gallery {
+  columns: 3 240px;
+  column-gap: 3px;
+  padding: 3px;
+}
+
+.gallery img {
+  width: 100%;
+  display: block;
+  margin-bottom: 3px;
+  break-inside: avoid;
+  opacity: 0;
+  transition: opacity 600ms ease;
+}
+
+.gallery img.visible {
+  opacity: 1;
+}
+
+@media (max-width: 600px) {
+  .gallery {
+    columns: 2 160px;
   }
 }
