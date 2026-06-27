@@ -109,6 +109,10 @@ h1 {
   cursor: default;
 }
 
+a.row {
+  cursor: pointer;
+}
+
 .org {
   color: var(--muted);
   font-size: clamp(0.78rem, 1.8vw, 0.86rem);
@@ -123,8 +127,42 @@ h1 {
   align-self: baseline;
 }
 
+.degree {
+  display: inline-block;
+  min-width: 25ch;
+}
+
+.degree::after {
+  content: "B.S. Computer Engineering";
+  animation: degree-shuffle 8s steps(1, end) infinite;
+}
+
+@keyframes degree-shuffle {
+  0%, 34% { content: "B.S. Computer Engineering"; }
+  36% { content: "B.S. C0mp#ter Eng!neering"; }
+  38% { content: "B.S. 7xQp^ter E4g!n33r1ng"; }
+  40% { content: "B.S. M4t#3m@t1c5"; }
+  42%, 76% { content: "B.S. Mathematics"; }
+  78% { content: "B.S. M@th3m@t!c$"; }
+  80% { content: "B.S. 9zQ%p8r Eng!n33r!ng"; }
+  82% { content: "B.S. C0mputer Eng1neer!ng"; }
+  84%, 100% { content: "B.S. Computer Engineering"; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .degree::after {
+    animation: none;
+    content: "B.S. Computer Engineering";
+  }
+}
+
 .row:hover .org {
   color: var(--accent);
+}
+
+a.row:focus-visible {
+  outline: 1px solid var(--accent);
+  outline-offset: 4px;
 }
 
 /* ── Pages ────────────────────────────────────── */
@@ -245,11 +283,14 @@ body.photo-page {
   padding: 20px;
 }
 
+.gallery figure {
+  margin: 0 0 20px;
+  break-inside: avoid;
+}
+
 .gallery img {
   width: 100%;
   display: block;
-  margin-bottom: 20px;
-  break-inside: avoid;
   opacity: 0;
   transition: opacity 600ms ease, transform 200ms ease;
 }
@@ -262,6 +303,21 @@ body.photo-page {
   transform: scale(1.012);
 }
 
+.gallery figcaption {
+  color: var(--muted);
+  font-family: var(--font);
+  font-size: 0.72rem;
+  letter-spacing: 0.02em;
+  padding: 8px 0 0;
+  text-align: center;
+  opacity: 0;
+  transition: opacity 600ms ease;
+}
+
+.gallery img.visible + figcaption {
+  opacity: 1;
+}
+
 @media (max-width: 600px) {
   .gallery {
     columns: 2 160px;
@@ -269,7 +325,7 @@ body.photo-page {
     padding: 12px;
   }
 
-  .gallery img {
+  .gallery figure {
     margin-bottom: 12px;
   }
 }
@@ -296,8 +352,8 @@ body.photo-page {
 
 .lb-frame {
   display: flex;
+  flex-direction: column;
   align-items: center;
-  justify-content: center;
   max-width: 90vw;
   max-height: 90svh;
 }
@@ -305,7 +361,7 @@ body.photo-page {
 .lb-img {
   display: block;
   max-width: 90vw;
-  max-height: 90svh;
+  max-height: 82svh;
   object-fit: contain;
   cursor: default;
 }

@@ -1,4 +1,4 @@
-const imgs = Array.from(document.querySelectorAll(".gallery img"));
+const imgs = Array.from(document.querySelectorAll(".gallery figure img"));
 let current = -1;
 
 // ── Scroll fade-in ────────────────────────────────────────────────────────────
