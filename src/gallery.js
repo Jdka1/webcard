@@ -52,13 +52,13 @@ function navigate(dir) {
 }
 
 imgs.forEach((img, i) => {
-  img.style.cursor = "zoom-in";
+  img.style.cursor = "pointer";
   img.addEventListener("click", () => open(i));
 });
 
-lb.querySelector(".lb-close").addEventListener("click", close);
-lb.querySelector(".lb-prev").addEventListener("click", () => navigate(-1));
-lb.querySelector(".lb-next").addEventListener("click", () => navigate(1));
+lb.querySelector(".lb-close").addEventListener("click", (e) => { e.stopPropagation(); close(); });
+lb.querySelector(".lb-prev").addEventListener("click", (e) => { e.stopPropagation(); navigate(-1); });
+lb.querySelector(".lb-next").addEventListener("click", (e) => { e.stopPropagation(); navigate(1); });
 
 lb.querySelector(".lb-frame").addEventListener("click", (e) => e.stopPropagation());
 lb.addEventListener("click", close);
