@@ -1,0 +1,17 @@
+{
+  "name": "webcard",
+  "version": "0.1.0",
+  "description": "Minimal personal website for Aryan Mehra.",
+  "type": "module",
+  "scripts": {
+    "start": "python3 -m http.server 5173",
+    "serve": "python3 -m http.server 5173"
+  },
+  "keywords": [
+    "portfolio",
+    "personal-site"
+  ],
+  "author": "Aryan Mehra",
+  "license": "UNLICENSED",
+  "private": true
+}
