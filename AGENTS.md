@@ -13,9 +13,14 @@ src/styles.css            — all styles (main + photo page)
 src/gallery.js            — marquee scroll + lightbox logic
 public/photography/       — full-resolution photo assets
 TODO.md                   — small markdown task list
+vercel.json               — Vercel static deployment config; force `Other` preset and repo-root output
 ```
 
 No framework. No bundler.
+
+## Deployment
+
+- Vercel must serve the repo root (`outputDirectory: "."`) because `index.html` lives at the root while `public/` only contains static photo assets. Without this override, Vercel's `Other` preset can choose `public/` as the output directory and production will 404 at `/`.
 
 ## Running locally
 
