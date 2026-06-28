@@ -45,8 +45,8 @@ gallery.appendChild(marquee);
 
 // ── Marquee animation ─────────────────────────────────────────────────────────
 
-const FIGURE_SIZE = 520;
-const GAP = 60;
+const FIGURE_SIZE = track.firstElementChild.getBoundingClientRect().width;
+const GAP = parseFloat(getComputedStyle(track).columnGap) || 60;
 const loopDistance = figures.length * (FIGURE_SIZE + GAP);
 const SPEED = loopDistance / 180;
 const WHEEL_LINE_PX = 16;

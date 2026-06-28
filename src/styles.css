@@ -302,6 +302,24 @@ a.row:focus-visible {
   .row.tree-wide {
     grid-template-columns: max-content minmax(0, 1fr);
   }
+
+  .gallery figure {
+    width: min(320px, calc(100vw - 60px));
+  }
+
+  .gallery-media {
+    height: min(320px, calc(100vw - 60px));
+  }
+
+  .gallery img {
+    max-width: min(320px, calc(100vw - 60px));
+    max-height: min(320px, calc(100vw - 60px));
+  }
+
+  .gallery-marquee,
+  .gallery-track {
+    gap: 30px;
+  }
 }
 
 /* ── Photography page ─────────────────────────── */
