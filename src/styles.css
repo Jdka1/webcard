@@ -304,21 +304,42 @@ a.row:focus-visible {
   }
 
   .gallery figure {
-    width: min(calc(50svh - 140px), calc(100vw - 60px));
+    width: min(calc(100vw - 60px), 320px);
   }
 
   .gallery-media {
-    height: min(calc(50svh - 140px), calc(100vw - 60px));
+    height: min(calc(100vw - 60px), 320px);
   }
 
   .gallery img {
-    max-width: min(calc(50svh - 140px), calc(100vw - 60px));
-    max-height: min(calc(50svh - 140px), calc(100vw - 60px));
+    max-width: min(calc(100vw - 60px), 320px);
+    max-height: min(calc(100vw - 60px), 320px);
   }
 
   .gallery-marquee,
   .gallery-track {
     gap: 30px;
+  }
+}
+
+/* Landscape phones: viewport too short for 520px figures */
+@media (orientation: landscape) and (max-height: 600px) {
+  .gallery figure {
+    width: min(calc(100svh - 160px), 260px);
+  }
+
+  .gallery-media {
+    height: min(calc(100svh - 160px), 260px);
+  }
+
+  .gallery img {
+    max-width: min(calc(100svh - 160px), 260px);
+    max-height: min(calc(100svh - 160px), 260px);
+  }
+
+  .gallery-marquee,
+  .gallery-track {
+    gap: 20px;
   }
 }
 
