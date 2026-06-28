@@ -34,6 +34,14 @@ npm start        # python3 -m http.server 5173
 
 Then open http://localhost:5173.
 
+If port `5173` is already in use, run the same static server on a free port, for example:
+
+```bash
+python3 -m http.server 5174
+```
+
+Then open http://localhost:5174.
+
 ## Design principles
 
 - **Dark terminal aesthetic** — near-black background (#0e0e0e), warm off-white text
@@ -89,7 +97,7 @@ X  GitHub  LinkedIn  YouTube
 - **Gallery manual scrolling** — users can drag the marquee with mouse/touch or use a trackpad two-finger horizontal swipe. The wheel handler only intercepts mostly-horizontal deltas so vertical page scrolling still works normally.
 - **Gallery hint** — `.gallery-hint` sits above the images with the text `swipe to scroll`; CSS adds left/right arrows around it with pseudo-elements and keeps bottom spacing so taller images do not crowd the hint. `src/gallery.js` adds `.is-hidden` after the first manual gallery interaction (mouse drag, touch drag, or horizontal wheel swipe).
 - **Reload drift guard** — the marquee is intentionally wider than the viewport, so `src/styles.css` clips horizontal overflow at the root/gallery and `src/gallery.js` clears only horizontal scroll offsets on page show/load. This prevents repeated browser reloads from restoring an old horizontal offset and shifting the photo page left.
-- **Image sizing** — each `<figure>` keeps a fixed 520px horizontal slot for smooth marquee spacing. `src/gallery.js` wraps each image and caption in `.gallery-media`, a 520×520px flex column that centers the photo/title pair while keeping the title 12px below the rendered image.
+- **Image sizing** — desktop uses fixed 520px `<figure>` slots for smooth marquee spacing. `src/gallery.js` wraps each image and caption in `.gallery-media`, a 520×520px flex column that centers the photo/title pair while keeping the title 12px below the rendered image. Mobile CSS in `src/styles.css` overrides this with `--gallery-size` so the gallery is vertically shorter and images scale down; keep these responsive gallery overrides after the base `.gallery` rules so the cascade does not restore the 520px desktop sizing.
 - **Captions** — `<figcaption>` fades in alongside the image (both use `opacity` transitions); caption color is `--text` by default and transitions to `--accent` on figure hover
 - **Click to open** — the entire `<figure>` (photo + caption) is the click target; cloned figures point to the same lightbox index as their originals
 - **Lightbox** — built in JS, appended to `<body>`. Shows the full-res image with caption, prev/next arrows, keyboard nav (←→ Escape). Close button and arrows hover to `--accent`. Clicking outside the frame closes it.
