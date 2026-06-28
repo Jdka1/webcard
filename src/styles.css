@@ -300,13 +300,7 @@ a.row:focus-visible {
   }
 
   .row.tree-wide {
-    display: flex;
-    flex-direction: column;
-    gap: 3px;
-  }
-
-  .tree-wide .role {
-    padding-left: 22px;
+    grid-template-columns: max-content minmax(0, 1fr);
   }
 }
 
