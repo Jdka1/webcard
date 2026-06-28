@@ -302,45 +302,6 @@ a.row:focus-visible {
   .row.tree-wide {
     grid-template-columns: max-content minmax(0, 1fr);
   }
-
-  .gallery figure {
-    width: min(calc(100vw - 60px), 320px);
-  }
-
-  .gallery-media {
-    height: min(calc(100vw - 60px), 320px);
-  }
-
-  .gallery img {
-    max-width: min(calc(100vw - 60px), 320px);
-    max-height: min(calc(100vw - 60px), 320px);
-  }
-
-  .gallery-marquee,
-  .gallery-track {
-    gap: 30px;
-  }
-}
-
-/* Landscape phones: viewport too short for 520px figures */
-@media (orientation: landscape) and (max-height: 600px) {
-  .gallery figure {
-    width: min(calc(100svh - 160px), 260px);
-  }
-
-  .gallery-media {
-    height: min(calc(100svh - 160px), 260px);
-  }
-
-  .gallery img {
-    max-width: min(calc(100svh - 160px), 260px);
-    max-height: min(calc(100svh - 160px), 260px);
-  }
-
-  .gallery-marquee,
-  .gallery-track {
-    gap: 20px;
-  }
 }
 
 /* ── Photography page ─────────────────────────── */
@@ -492,6 +453,63 @@ body.photo-page {
 
 .caption-loc {
   font-size: 0.65rem;
+}
+
+@media (max-width: 760px) {
+  .gallery {
+    --gallery-size: min(calc(100vw - 56px), 320px);
+    --gallery-gap: 30px;
+    padding: 12px 0 16px;
+  }
+
+  .gallery-hint {
+    margin: 14px 24px 10px;
+  }
+
+  .gallery figure {
+    width: var(--gallery-size);
+  }
+
+  .gallery-media {
+    height: var(--gallery-size);
+  }
+
+  .gallery img {
+    max-width: var(--gallery-size);
+    max-height: calc(var(--gallery-size) - 44px);
+  }
+
+  .gallery-marquee,
+  .gallery-track {
+    gap: var(--gallery-gap);
+  }
+}
+
+/* Landscape phones: viewport too short for 520px figures */
+@media (orientation: landscape) and (max-height: 600px) {
+  .gallery {
+    --gallery-size: min(calc(100svh - 150px), 260px);
+    --gallery-gap: 20px;
+    padding: 8px 0 12px;
+  }
+
+  .gallery figure {
+    width: var(--gallery-size);
+  }
+
+  .gallery-media {
+    height: var(--gallery-size);
+  }
+
+  .gallery img {
+    max-width: var(--gallery-size);
+    max-height: calc(var(--gallery-size) - 40px);
+  }
+
+  .gallery-marquee,
+  .gallery-track {
+    gap: var(--gallery-gap);
+  }
 }
 
 /* ── Lightbox ─────────────────────────────────── */
