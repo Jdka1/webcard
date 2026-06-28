@@ -1,1 +1,2 @@
 - [ ] Write a more meaningful mission statement/bio for photography.
+- [ ] Make site look better on phone
