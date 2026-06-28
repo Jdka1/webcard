@@ -304,16 +304,16 @@ a.row:focus-visible {
   }
 
   .gallery figure {
-    width: min(320px, calc(100vw - 60px));
+    width: min(calc(50svh - 140px), calc(100vw - 60px));
   }
 
   .gallery-media {
-    height: min(320px, calc(100vw - 60px));
+    height: min(calc(50svh - 140px), calc(100vw - 60px));
   }
 
   .gallery img {
-    max-width: min(320px, calc(100vw - 60px));
-    max-height: min(320px, calc(100vw - 60px));
+    max-width: min(calc(50svh - 140px), calc(100vw - 60px));
+    max-height: min(calc(50svh - 140px), calc(100vw - 60px));
   }
 
   .gallery-marquee,
