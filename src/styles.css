@@ -293,10 +293,20 @@ a.row:focus-visible {
 
 /* ── Responsive ───────────────────────────────── */
 
-@media (max-width: 480px) {
+@media (max-width: 760px) {
   .row {
-    grid-template-columns: 84px 1fr;
-    gap: 14px;
+    grid-template-columns: 84px minmax(0, 1fr);
+    gap: 20px;
+  }
+
+  .row.tree-wide {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+  }
+
+  .tree-wide .role {
+    padding-left: 22px;
   }
 }
 
