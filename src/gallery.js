@@ -34,6 +34,7 @@ figures.forEach((f) => {
   f.insertBefore(media, img);
   media.appendChild(img);
   media.appendChild(caption);
+  img.draggable = false;
   img.classList.add("visible");
   track.appendChild(f);
 });
@@ -94,29 +95,6 @@ requestAnimationFrame(tick);
 
 gallery.addEventListener("mouseenter", () => { isHovered = true; });
 gallery.addEventListener("mouseleave", () => { isHovered = false; });
-
-gallery.addEventListener("mousedown", (e) => {
-  hideGalleryHint();
-  isDragging = true;
-  hasDragged = false;
-  dragStartX = e.clientX;
-  dragStartPos = pos;
-  marquee.style.cursor = "grabbing";
-});
-
-window.addEventListener("mousemove", (e) => {
-  if (!isDragging) return;
-  const dx = e.clientX - dragStartX;
-  if (Math.abs(dx) > 5) hasDragged = true;
-  pos = wrapPosition(dragStartPos - dx);
-  lastTime = null;
-});
-
-window.addEventListener("mouseup", () => {
-  if (!isDragging) return;
-  isDragging = false;
-  marquee.style.cursor = "";
-});
 
 gallery.addEventListener("touchstart", (e) => {
   hideGalleryHint();

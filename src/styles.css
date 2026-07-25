@@ -381,7 +381,6 @@ body.photo-page {
   max-width: 100vw;
   overflow: hidden;
   padding: 20px 0;
-  cursor: grab;
   user-select: none;
   contain: paint;
 }
