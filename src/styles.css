@@ -184,34 +184,34 @@ a.row {
 }
 
 .degree::after {
-  content: "B.S. Computer Engineering";
+  content: "B.S. Engineering Physics";
   animation: degree-shuffle 8s steps(1, end) infinite;
 }
 
 @keyframes degree-shuffle {
-  0%, 34% { content: "B.S. Computer Engineering"; }
-  35% { content: "B.S. C0mp#ter Eng!neering"; }
-  36% { content: "B.S. 7xQp^ter E4g!n33r1ng"; }
+  0%, 34% { content: "B.S. Engineering Physics"; }
+  35% { content: "B.S. Eng!neering Phy$ics"; }
+  36% { content: "B.S. 3ng1n33r!ng Phy5!c$"; }
   37% { content: "B.S. k2T$9r @nG!n##r1ng"; }
-  38% { content: "B.S. Mx7#3m@t!c5"; }
-  39% { content: "B.S. M4tH%q@t1c$"; }
-  40% { content: "B.S. M@th3m@t!c5"; }
-  41% { content: "B.S. Math3matics"; }
-  42%, 76% { content: "B.S. Mathematics"; }
-  77% { content: "B.S. M@th3m@t!c$"; }
-  78% { content: "B.S. M4tH%q@t1c5"; }
+  38% { content: "B.S. C0mp#ter Sc!3nc3"; }
+  39% { content: "B.S. C4mP%t3r 5c!enc3"; }
+  40% { content: "B.S. C0mput3r Sc!ence"; }
+  41% { content: "B.S. Computer Sc1ence"; }
+  42%, 76% { content: "B.S. Computer Science"; }
+  77% { content: "B.S. C0mput3r Sc!ence"; }
+  78% { content: "B.S. C4mP%t3r 5c!enc3"; }
   79% { content: "B.S. p9Z#v2r @nG!n33r"; }
-  80% { content: "B.S. 9zQ%p8r Eng!n33r!ng"; }
-  81% { content: "B.S. C0mp#ter E4g!n33r1ng"; }
-  82% { content: "B.S. C0mputer Eng1neer!ng"; }
-  83% { content: "B.S. Computer Engineer1ng"; }
-  84%, 100% { content: "B.S. Computer Engineering"; }
+  80% { content: "B.S. 3ng1n33r!ng Phy5!c$"; }
+  81% { content: "B.S. Eng!neering Phy$ics"; }
+  82% { content: "B.S. Engineering Phys1cs"; }
+  83% { content: "B.S. Engineering Physics"; }
+  84%, 100% { content: "B.S. Engineering Physics"; }
 }
 
 @media (prefers-reduced-motion: reduce) {
   .degree::after {
     animation: none;
-    content: "B.S. Computer Engineering";
+    content: "B.S. Engineering Physics";
   }
 }
 
