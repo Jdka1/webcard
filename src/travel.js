@@ -68,32 +68,26 @@ function draw() {
     const point = project([place.longitude, place.latitude]);
     if (!point) return;
     const group = make('g', { class: `destination${selectedIndex === index ? ' is-selected' : ''}`, tabindex: '0', role: 'button', 'aria-label': `${place.name}, ${place.country}` });
-    const fromCenterX = point[0] - width / 2;
-    const fromCenterY = point[1] - height / 2;
-    const distance = Math.hypot(fromCenterX, fromCenterY) || 1;
-    const outwardX = fromCenterX / distance;
-    const outwardY = fromCenterY / distance;
-    const heightAboveSurface = 28;
-    const tipX = point[0] + outwardX * heightAboveSurface;
-    const tipY = point[1] + outwardY * heightAboveSurface;
-    const sideX = -outwardY;
-    const sideY = outwardX;
+    // Screen-upright beacons keep the visual language stable while their bases stay attached to the globe.
+    const heightAboveSurface = 26;
+    const tipX = point[0];
+    const tipY = point[1] - heightAboveSurface;
     const baseWidth = 6;
     const tipWidth = 4;
     const points = (coordinates) => coordinates.map(([x, y]) => `${x},${y}`).join(' ');
 
     group.append(make('ellipse', { class: 'waypoint-shadow', cx: point[0], cy: point[1], rx: baseWidth + 2, ry: 3 }));
     group.append(make('polygon', { class: 'waypoint-side', points: points([
-      [point[0] - sideX * baseWidth, point[1] - sideY * baseWidth],
-      [tipX - sideX * tipWidth, tipY - sideY * tipWidth],
-      [tipX, tipY],
-      [point[0], point[1]]
-    ]) }));
-    group.append(make('polygon', { class: 'waypoint-face', points: points([
       [point[0], point[1]],
       [tipX, tipY],
-      [tipX + sideX * tipWidth, tipY + sideY * tipWidth],
-      [point[0] + sideX * baseWidth, point[1] + sideY * baseWidth]
+      [tipX + tipWidth, tipY + 2],
+      [point[0] + baseWidth, point[1] + 2]
+    ]) }));
+    group.append(make('polygon', { class: 'waypoint-face', points: points([
+      [point[0] - baseWidth, point[1] + 2],
+      [tipX - tipWidth, tipY + 2],
+      [tipX, tipY],
+      [point[0], point[1]]
     ]) }));
     group.append(make('ellipse', { class: 'waypoint-cap', cx: tipX, cy: tipY, rx: 7, ry: 5 }));
     group.append(make('circle', { class: 'destination-ring', cx: tipX, cy: tipY, r: 12 }));

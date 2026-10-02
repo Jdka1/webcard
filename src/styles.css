@@ -436,7 +436,7 @@ body.collection-page {
 #travel-map:active { cursor: grabbing; }
 .map-sphere { fill: #151512; stroke: #3a3934; stroke-width: 1; }
 .map-graticule { fill: none; stroke: #2a2925; stroke-width: 0.6; }
-.map-countries { fill: #1e1d1a; stroke: #58554d; stroke-width: 0.65; }
+.map-countries { fill: #1e1d1a; stroke: #58554d; stroke-linejoin: round; stroke-width: 0.65; }
 .destination { cursor: pointer; }
 .waypoint-shadow { fill: #090909; opacity: 0.82; }
 .waypoint-side { fill: #746142; stroke: #0e0e0e; stroke-width: 0.75; }
