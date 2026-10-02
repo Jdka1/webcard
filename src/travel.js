@@ -56,7 +56,7 @@ function draw() {
   svg.replaceChildren();
   const sphere = make('path', { class: 'map-sphere', d: path({ type: 'Sphere' }) });
   svg.append(sphere);
-  svg.append(make('path', { class: 'map-graticule', d: path(graticule()) }));
+  svg.append(make('path', { class: 'map-graticule', d: path(graticule) }));
   if (land) svg.append(make('path', { class: 'map-land', d: path(land) }));
 
   places.forEach((place, index) => {
