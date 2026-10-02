@@ -19,8 +19,10 @@
         <div class="map-switch" role="group" aria-label="Map view"><button type="button" data-view="globe">globe</button><button type="button" data-view="map">flat map</button></div>
       </header>
       <p id="map-help" class="map-help">drag to turn · scroll to zoom · select a point</p>
-      <section class="map-frame" aria-label="Interactive map of visited destinations"><svg id="travel-map" viewBox="0 0 960 580" role="img" aria-label="World map with visited destinations"></svg></section>
-      <section class="travel-list-wrap" aria-labelledby="visited-title"><h2 id="visited-title">visited</h2><ol id="travel-list" class="travel-list"></ol></section>
+      <div class="travel-map-stage">
+        <section class="map-frame" aria-label="Interactive map of visited destinations"><svg id="travel-map" viewBox="0 0 960 580" role="img" aria-label="World map with visited destinations"></svg></section>
+        <section class="travel-list-wrap" aria-labelledby="visited-title"><h2 id="visited-title">visited</h2><ol id="travel-list" class="travel-list"></ol></section>
+      </div>
     </main>
     <script type="module" src="/src/travel.js"></script>
   </body>

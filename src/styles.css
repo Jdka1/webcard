@@ -436,14 +436,17 @@ body.collection-page {
 #travel-map:active { cursor: grabbing; }
 .map-sphere { fill: #151512; stroke: #3a3934; stroke-width: 1; }
 .map-graticule { fill: none; stroke: #2a2925; stroke-width: 0.6; }
-.map-land { fill: #1e1d1a; stroke: #484640; stroke-width: 0.7; }
+.map-countries { fill: #1e1d1a; stroke: #58554d; stroke-width: 0.65; }
 .destination { cursor: pointer; }
-.destination circle:first-child { fill: var(--accent); }
+.waypoint-stem { stroke: var(--accent); stroke-linecap: round; stroke-width: 2; }
+.waypoint-base { fill: #6f624d; stroke: var(--accent); stroke-width: 1; }
+.waypoint-cap { fill: #ead1a7; stroke: #0e0e0e; stroke-width: 2; }
+.destination.is-selected .waypoint-cap { fill: var(--text); }
 .destination-ring { fill: none; stroke: var(--accent); stroke-width: 1; opacity: 0; transition: opacity 140ms ease; }
 .destination text { fill: var(--text); font-family: var(--font); font-size: 11px; opacity: 0; pointer-events: none; transition: opacity 140ms ease; }
 .destination:hover .destination-ring, .destination:hover text, .destination.is-selected .destination-ring, .destination.is-selected text { opacity: 1; }
 .destination:focus { outline: none; }
-.destination:focus circle:first-child { stroke: var(--text); stroke-width: 2; }
+.destination:focus .waypoint-cap { stroke: var(--text); stroke-width: 2; }
 .travel-list-wrap { margin-top: 56px; max-width: 690px; }
 .travel-list-wrap h2 { color: var(--muted); font-size: 0.78rem; font-weight: 400; margin: 0 0 8px; }
 .travel-list { list-style: none; margin: 0; padding: 0; }
@@ -468,6 +471,68 @@ body.collection-page {
   .travel-header { align-items: start; flex-direction: column; gap: 26px; }
   .map-help { margin-top: 28px; }
   .destination text { display: none; }
+}
+
+/* ── Full-screen travel map ───────────────────── */
+
+body.travel-page {
+  display: flex;
+  flex-direction: column;
+  height: 100svh;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.travel-page .collection-nav {
+  flex: 0 0 auto;
+  padding-bottom: 12px;
+}
+
+.travel-page .travel-shell {
+  display: grid;
+  flex: 1 1 auto;
+  grid-template-rows: auto auto minmax(0, 1fr);
+  margin: 0 auto 24px;
+  min-height: 0;
+  width: min(1240px, calc(100% - 56px));
+}
+
+.travel-page .travel-header { padding-top: 2px; }
+.travel-page .travel-header h1 { font-size: clamp(1.8rem, 4vw, 3.25rem); }
+.travel-page .map-help { margin: 16px 0 10px; }
+.travel-map-stage { min-height: 0; position: relative; }
+.travel-page .map-frame { height: 100%; }
+.travel-page #travel-map { height: 100%; max-height: none; }
+
+.travel-page .travel-list-wrap {
+  background: rgba(14, 14, 14, 0.86);
+  backdrop-filter: blur(8px);
+  bottom: 18px;
+  left: 18px;
+  margin: 0;
+  max-width: 340px;
+  padding: 12px 14px;
+  position: absolute;
+  width: min(340px, calc(100% - 36px));
+}
+
+.travel-page .travel-list-wrap h2 { margin-bottom: 4px; }
+.travel-page .travel-item button { padding: 7px 0; }
+
+@media (max-width: 680px) {
+  .travel-page .collection-nav { padding: 14px 20px 8px; }
+  .travel-page .travel-shell { margin: 0 auto 12px; width: calc(100% - 32px); }
+  .travel-page .travel-header { align-items: end; flex-direction: row; gap: 12px; }
+  .travel-page .travel-header h1 { font-size: 1.8rem; }
+  .travel-page .map-switch { gap: 4px; }
+  .travel-page .map-switch button { padding: 5px 7px; }
+  .travel-page .map-help { font-size: 0.65rem; margin: 10px 0 8px; }
+  .travel-page .travel-list-wrap { bottom: 8px; left: 8px; max-width: calc(100% - 16px); padding: 8px 10px; width: calc(100% - 16px); }
+  .travel-page .travel-list { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: 14px; }
+  .travel-page .travel-item:nth-last-child(-n + 2) { border-bottom: 0; }
+  .travel-page .travel-item button { font-size: 0.66rem; padding: 4px 0; }
+  .travel-page .travel-item button > span:last-of-type,
+  .travel-page .travel-item small { display: none; }
 }
 
 /* ── Responsive ───────────────────────────────── */

@@ -28,9 +28,9 @@ const [placesResponse, atlasResponse] = await Promise.all([
 if (!placesResponse.ok || !atlasResponse.ok) throw new Error('Map data was unavailable');
 const { places } = await placesResponse.json();
 const atlas = await atlasResponse.json();
-let land = null;
+let countries = null;
 try {
-  land = feature(atlas, atlas.objects.land || atlas.objects.countries);
+  countries = feature(atlas, atlas.objects.countries);
 } catch (error) {
   // The globe, graticule, and pins remain useful if a CDN map-data update is malformed.
   console.warn('World boundary data was unavailable.', error);
@@ -39,7 +39,7 @@ const graticule = geoGraticule10();
 
 function projection() {
   if (view === 'map') return geoEquirectangular().fitExtent([[38, 48], [922, 532]], { type: 'Sphere' });
-  return geoOrthographic().translate([width / 2, height / 2]).scale(244 * zoom).rotate(rotation).clipAngle(90);
+  return geoOrthographic().translate([width / 2, height / 2]).scale(275 * zoom).rotate(rotation).clipAngle(90);
 }
 
 function isVisible(place) {
@@ -57,16 +57,27 @@ function draw() {
   const sphere = make('path', { class: 'map-sphere', d: path({ type: 'Sphere' }) });
   svg.append(sphere);
   svg.append(make('path', { class: 'map-graticule', d: path(graticule) }));
-  if (land) svg.append(make('path', { class: 'map-land', d: path(land) }));
+  if (countries) svg.append(make('path', { class: 'map-countries', d: path(countries) }));
 
   places.forEach((place, index) => {
     if (!isVisible(place)) return;
     const point = project([place.longitude, place.latitude]);
     if (!point) return;
     const group = make('g', { class: `destination${selectedIndex === index ? ' is-selected' : ''}`, tabindex: '0', role: 'button', 'aria-label': `${place.name}, ${place.country}` });
-    group.append(make('circle', { cx: point[0], cy: point[1], r: 5 }));
-    group.append(make('circle', { class: 'destination-ring', cx: point[0], cy: point[1], r: 10 }));
-    const label = make('text', { x: point[0] + 13, y: point[1] + 4 });
+    const fromCenterX = point[0] - width / 2;
+    const fromCenterY = point[1] - height / 2;
+    const distance = Math.hypot(fromCenterX, fromCenterY) || 1;
+    const outwardX = fromCenterX / distance;
+    const outwardY = fromCenterY / distance;
+    const heightAboveSurface = view === 'globe' ? 23 : 12;
+    const tipX = point[0] + outwardX * heightAboveSurface;
+    const tipY = point[1] + outwardY * heightAboveSurface;
+
+    group.append(make('line', { class: 'waypoint-stem', x1: point[0], y1: point[1], x2: tipX, y2: tipY }));
+    group.append(make('circle', { class: 'waypoint-base', cx: point[0], cy: point[1], r: 5 }));
+    group.append(make('circle', { class: 'waypoint-cap', cx: tipX, cy: tipY, r: view === 'globe' ? 6 : 5 }));
+    group.append(make('circle', { class: 'destination-ring', cx: tipX, cy: tipY, r: view === 'globe' ? 12 : 10 }));
+    const label = make('text', { x: tipX + 15, y: tipY + 4 });
     label.textContent = place.name;
     group.append(label);
     group.addEventListener('click', () => select(index));
@@ -88,7 +99,7 @@ function select(index) {
 
 function setView(nextView) {
   view = nextView;
-  help.textContent = view === 'globe' ? 'drag to turn · scroll to zoom · select a point' : 'drag to pan · select a point';
+  help.textContent = view === 'globe' ? 'drag to turn · scroll to zoom · select a point' : 'select a point';
   buttons.forEach((button) => {
     const active = button.dataset.view === view;
     button.classList.toggle('is-active', active);
@@ -113,7 +124,7 @@ svg.addEventListener('pointerup', () => { isDragging = false; origin = null; });
 svg.addEventListener('wheel', (event) => {
   if (view !== 'globe') return;
   event.preventDefault();
-  zoom = Math.max(0.7, Math.min(1.65, zoom - event.deltaY * 0.001));
+  zoom = Math.max(0.65, Math.min(4.5, zoom - event.deltaY * 0.0025));
   draw();
 }, { passive: false });
 buttons.forEach((button) => button.addEventListener('click', () => setView(button.dataset.view)));
