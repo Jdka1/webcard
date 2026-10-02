@@ -1,18 +1,16 @@
-import { geoEquirectangular, geoGraticule10, geoOrthographic, geoPath } from 'https://cdn.jsdelivr.net/npm/d3-geo@3/+esm';
+import { geoGraticule10, geoOrthographic, geoPath } from 'https://cdn.jsdelivr.net/npm/d3-geo@3/+esm';
 import { feature } from 'https://cdn.jsdelivr.net/npm/topojson-client@3/+esm';
 
 const svg = document.querySelector('#travel-map');
 const list = document.querySelector('#travel-list');
-const help = document.querySelector('#map-help');
-const buttons = [...document.querySelectorAll('[data-view]')];
 const width = 960;
 const height = 580;
-let view = 'globe';
 let rotation = [12, -18, 0];
 let zoom = 1;
 let selectedIndex = null;
 let isDragging = false;
 let origin = null;
+let animationFrame = null;
 
 const ns = 'http://www.w3.org/2000/svg';
 const make = (tag, attributes = {}) => {
@@ -37,13 +35,19 @@ try {
 }
 const graticule = geoGraticule10();
 
+function scheduleDraw() {
+  if (animationFrame) return;
+  animationFrame = requestAnimationFrame(() => {
+    animationFrame = null;
+    draw();
+  });
+}
+
 function projection() {
-  if (view === 'map') return geoEquirectangular().fitExtent([[38, 48], [922, 532]], { type: 'Sphere' });
   return geoOrthographic().translate([width / 2, height / 2]).scale(275 * zoom).rotate(rotation).clipAngle(90);
 }
 
 function isVisible(place) {
-  if (view === 'map') return true;
   const lambda = (place.longitude + rotation[0]) * Math.PI / 180;
   const phi = place.latitude * Math.PI / 180;
   const phi0 = -rotation[1] * Math.PI / 180;
@@ -69,14 +73,30 @@ function draw() {
     const distance = Math.hypot(fromCenterX, fromCenterY) || 1;
     const outwardX = fromCenterX / distance;
     const outwardY = fromCenterY / distance;
-    const heightAboveSurface = view === 'globe' ? 23 : 12;
+    const heightAboveSurface = 28;
     const tipX = point[0] + outwardX * heightAboveSurface;
     const tipY = point[1] + outwardY * heightAboveSurface;
+    const sideX = -outwardY;
+    const sideY = outwardX;
+    const baseWidth = 6;
+    const tipWidth = 4;
+    const points = (coordinates) => coordinates.map(([x, y]) => `${x},${y}`).join(' ');
 
-    group.append(make('line', { class: 'waypoint-stem', x1: point[0], y1: point[1], x2: tipX, y2: tipY }));
-    group.append(make('circle', { class: 'waypoint-base', cx: point[0], cy: point[1], r: 5 }));
-    group.append(make('circle', { class: 'waypoint-cap', cx: tipX, cy: tipY, r: view === 'globe' ? 6 : 5 }));
-    group.append(make('circle', { class: 'destination-ring', cx: tipX, cy: tipY, r: view === 'globe' ? 12 : 10 }));
+    group.append(make('ellipse', { class: 'waypoint-shadow', cx: point[0], cy: point[1], rx: baseWidth + 2, ry: 3 }));
+    group.append(make('polygon', { class: 'waypoint-side', points: points([
+      [point[0] - sideX * baseWidth, point[1] - sideY * baseWidth],
+      [tipX - sideX * tipWidth, tipY - sideY * tipWidth],
+      [tipX, tipY],
+      [point[0], point[1]]
+    ]) }));
+    group.append(make('polygon', { class: 'waypoint-face', points: points([
+      [point[0], point[1]],
+      [tipX, tipY],
+      [tipX + sideX * tipWidth, tipY + sideY * tipWidth],
+      [point[0] + sideX * baseWidth, point[1] + sideY * baseWidth]
+    ]) }));
+    group.append(make('ellipse', { class: 'waypoint-cap', cx: tipX, cy: tipY, rx: 7, ry: 5 }));
+    group.append(make('circle', { class: 'destination-ring', cx: tipX, cy: tipY, r: 12 }));
     const label = make('text', { x: tipX + 15, y: tipY + 4 });
     label.textContent = place.name;
     group.append(label);
@@ -94,18 +114,7 @@ function renderList() {
 function select(index) {
   selectedIndex = selectedIndex === index ? null : index;
   renderList();
-  draw();
-}
-
-function setView(nextView) {
-  view = nextView;
-  help.textContent = view === 'globe' ? 'drag to turn · scroll to zoom · select a point' : 'select a point';
-  buttons.forEach((button) => {
-    const active = button.dataset.view === view;
-    button.classList.toggle('is-active', active);
-    button.setAttribute('aria-pressed', String(active));
-  });
-  draw();
+  scheduleDraw();
 }
 
 svg.addEventListener('pointerdown', (event) => {
@@ -117,17 +126,15 @@ svg.addEventListener('pointermove', (event) => {
   if (!isDragging || !origin) return;
   const dx = event.clientX - origin.x;
   const dy = event.clientY - origin.y;
-  if (view === 'globe') rotation = [origin.rotation[0] + dx * 0.35, Math.max(-70, Math.min(70, origin.rotation[1] - dy * 0.35)), 0];
-  draw();
+  rotation = [origin.rotation[0] + dx * 0.35, Math.max(-70, Math.min(70, origin.rotation[1] - dy * 0.35)), 0];
+  scheduleDraw();
 });
 svg.addEventListener('pointerup', () => { isDragging = false; origin = null; });
 svg.addEventListener('wheel', (event) => {
-  if (view !== 'globe') return;
   event.preventDefault();
   zoom = Math.max(0.65, Math.min(4.5, zoom - event.deltaY * 0.0025));
-  draw();
+  scheduleDraw();
 }, { passive: false });
-buttons.forEach((button) => button.addEventListener('click', () => setView(button.dataset.view)));
 
 renderList();
-setView('globe');
+draw();

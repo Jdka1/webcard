@@ -438,8 +438,9 @@ body.collection-page {
 .map-graticule { fill: none; stroke: #2a2925; stroke-width: 0.6; }
 .map-countries { fill: #1e1d1a; stroke: #58554d; stroke-width: 0.65; }
 .destination { cursor: pointer; }
-.waypoint-stem { stroke: var(--accent); stroke-linecap: round; stroke-width: 2; }
-.waypoint-base { fill: #6f624d; stroke: var(--accent); stroke-width: 1; }
+.waypoint-shadow { fill: #090909; opacity: 0.82; }
+.waypoint-side { fill: #746142; stroke: #0e0e0e; stroke-width: 0.75; }
+.waypoint-face { fill: #c3a779; stroke: #0e0e0e; stroke-width: 0.75; }
 .waypoint-cap { fill: #ead1a7; stroke: #0e0e0e; stroke-width: 2; }
 .destination.is-selected .waypoint-cap { fill: var(--text); }
 .destination-ring { fill: none; stroke: var(--accent); stroke-width: 1; opacity: 0; transition: opacity 140ms ease; }
