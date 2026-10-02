@@ -28,7 +28,13 @@ const [placesResponse, atlasResponse] = await Promise.all([
 if (!placesResponse.ok || !atlasResponse.ok) throw new Error('Map data was unavailable');
 const { places } = await placesResponse.json();
 const atlas = await atlasResponse.json();
-const land = feature(atlas, atlas.objects.countries);
+let land = null;
+try {
+  land = feature(atlas, atlas.objects.land || atlas.objects.countries);
+} catch (error) {
+  // The globe, graticule, and pins remain useful if a CDN map-data update is malformed.
+  console.warn('World boundary data was unavailable.', error);
+}
 const graticule = geoGraticule10();
 
 function projection() {
@@ -51,7 +57,7 @@ function draw() {
   const sphere = make('path', { class: 'map-sphere', d: path({ type: 'Sphere' }) });
   svg.append(sphere);
   svg.append(make('path', { class: 'map-graticule', d: path(graticule()) }));
-  svg.append(make('path', { class: 'map-land', d: path(land) }));
+  if (land) svg.append(make('path', { class: 'map-land', d: path(land) }));
 
   places.forEach((place, index) => {
     if (!isVisible(place)) return;
