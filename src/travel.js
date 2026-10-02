@@ -68,30 +68,9 @@ function draw() {
     const point = project([place.longitude, place.latitude]);
     if (!point) return;
     const group = make('g', { class: `destination${selectedIndex === index ? ' is-selected' : ''}`, tabindex: '0', role: 'button', 'aria-label': `${place.name}, ${place.country}` });
-    // Screen-upright beacons keep the visual language stable while their bases stay attached to the globe.
-    const heightAboveSurface = 26;
-    const tipX = point[0];
-    const tipY = point[1] - heightAboveSurface;
-    const baseWidth = 6;
-    const tipWidth = 4;
-    const points = (coordinates) => coordinates.map(([x, y]) => `${x},${y}`).join(' ');
-
-    group.append(make('ellipse', { class: 'waypoint-shadow', cx: point[0], cy: point[1], rx: baseWidth + 2, ry: 3 }));
-    group.append(make('polygon', { class: 'waypoint-side', points: points([
-      [point[0], point[1]],
-      [tipX, tipY],
-      [tipX + tipWidth, tipY + 2],
-      [point[0] + baseWidth, point[1] + 2]
-    ]) }));
-    group.append(make('polygon', { class: 'waypoint-face', points: points([
-      [point[0] - baseWidth, point[1] + 2],
-      [tipX - tipWidth, tipY + 2],
-      [tipX, tipY],
-      [point[0], point[1]]
-    ]) }));
-    group.append(make('ellipse', { class: 'waypoint-cap', cx: tipX, cy: tipY, rx: 7, ry: 5 }));
-    group.append(make('circle', { class: 'destination-ring', cx: tipX, cy: tipY, r: 12 }));
-    const label = make('text', { x: tipX + 15, y: tipY + 4 });
+    group.append(make('circle', { class: 'destination-dot', cx: point[0], cy: point[1], r: 5 }));
+    group.append(make('circle', { class: 'destination-ring', cx: point[0], cy: point[1], r: 10 }));
+    const label = make('text', { x: point[0] + 13, y: point[1] + 4 });
     label.textContent = place.name;
     group.append(label);
     group.addEventListener('click', () => select(index));
