@@ -1,0 +1,53 @@
+{
+  "layout": "index",
+  "items": [
+    {
+      "type": "film",
+      "title": "Stalker",
+      "creator": "Andrei Tarkovsky",
+      "year": "1979",
+      "note": "A pilgrimage through faith, desire, and the uncertainty of knowing oneself.",
+      "url": "https://www.criterion.com/films/294-stalker"
+    },
+    {
+      "type": "book",
+      "title": "The Dispossessed",
+      "creator": "Ursula K. Le Guin",
+      "year": "1974",
+      "note": "A novel that treats political imagination as a deeply personal act.",
+      "url": "https://www.ursulakleguin.com/the-dispossessed"
+    },
+    {
+      "type": "essay",
+      "title": "The Cathedral and the Bazaar",
+      "creator": "Eric S. Raymond",
+      "year": "1997",
+      "note": "An enduring argument for building in public and learning from the edge cases.",
+      "url": "http://www.catb.org/~esr/writings/cathedral-bazaar/"
+    },
+    {
+      "type": "talk",
+      "title": "The Computer Revolution Hasn't Happened Yet",
+      "creator": "Alan Kay",
+      "year": "1997",
+      "note": "A sharp provocation about the gap between tools we have and tools we could imagine.",
+      "url": "https://www.youtube.com/watch?v=oKg1hTOQXoY"
+    },
+    {
+      "type": "quote",
+      "title": "What I cannot create, I do not understand.",
+      "creator": "Richard Feynman",
+      "year": "",
+      "note": "Written on the blackboard in his office at Caltech.",
+      "url": ""
+    },
+    {
+      "type": "album",
+      "title": "Promises",
+      "creator": "Floating Points, Pharoah Sanders & The London Symphony Orchestra",
+      "year": "2021",
+      "note": "Patient, spacious music that rewards complete attention.",
+      "url": "https://floatingpoints.co.uk/promises"
+    }
+  ]
+}

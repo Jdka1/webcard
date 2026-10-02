@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="A shared canon collected by Aryan Mehra." />
+    <title>Canon · Aryan Mehra</title>
+    <link rel="icon" href="/public/favicon.jpeg" type="image/jpeg" />
+    <link rel="stylesheet" href="/src/styles.css" />
+  </head>
+  <body class="collection-page canon-page">
+    <nav class="collection-nav" aria-label="Site navigation"><a href="/">← Aryan Mehra</a></nav>
+    <main class="collection-shell">
+      <header class="collection-header">
+        <p class="eyebrow">a shared canon</p>
+        <h1>things worth<br>returning to<span class="cursor" aria-hidden="true">_</span></h1>
+        <p class="collection-intro">A living index of works, ideas, and fragments I want to keep in circulation.</p>
+      </header>
+      <div class="canon-layouts" role="group" aria-label="Canon display style">
+        <button type="button" data-layout="index">index</button>
+        <button type="button" data-layout="shelf">shelf</button>
+        <button type="button" data-layout="notes">notes</button>
+      </div>
+      <section id="canon-items" class="canon-items" aria-live="polite"></section>
+      <p class="collection-footnote">The order is part of the argument.</p>
+    </main>
+    <script type="module" src="/src/canon.js"></script>
+  </body>
+</html>

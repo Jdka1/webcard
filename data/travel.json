@@ -1,0 +1,46 @@
+{
+  "places": [
+    {
+      "name": "Yosemite National Park",
+      "country": "United States",
+      "latitude": 37.8651,
+      "longitude": -119.5383,
+      "note": "Granite, water, and the first real feeling of scale."
+    },
+    {
+      "name": "Denali National Park",
+      "country": "United States",
+      "latitude": 63.1148,
+      "longitude": -151.1926,
+      "note": "A long horizon and a landscape that refuses to become background."
+    },
+    {
+      "name": "Lauterbrunnen",
+      "country": "Switzerland",
+      "latitude": 46.5937,
+      "longitude": 7.9091,
+      "note": "Waterfalls falling from a valley that feels improbably vertical."
+    },
+    {
+      "name": "Montreux",
+      "country": "Switzerland",
+      "latitude": 46.4312,
+      "longitude": 6.9107,
+      "note": "Lake light, storm clouds, and Château de Chillon."
+    },
+    {
+      "name": "Banff National Park",
+      "country": "Canada",
+      "latitude": 51.4968,
+      "longitude": -115.9281,
+      "note": "Moraine Lake under a changing sky."
+    },
+    {
+      "name": "ʻEwa Forest Reserve",
+      "country": "United States",
+      "latitude": 21.4058,
+      "longitude": -158.0131,
+      "note": "Small life in a wet, quiet corner of Oʻahu."
+    }
+  ]
+}
