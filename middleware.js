@@ -12,6 +12,8 @@
 // NOTE: this only takes effect on Vercel. The local `python3 -m http.server`
 // preview does not run middleware, which is fine for local layout checks.
 
+import { next } from '@vercel/functions';
+
 export const config = {
   matcher: ['/memories', '/memories/:path*', '/public/memories/:path*'],
 };
@@ -33,7 +35,7 @@ export default function middleware(request) {
       const user = decoded.slice(0, sep);
       const pass = decoded.slice(sep + 1);
       if (user === expectedUser && pass === expectedPass) {
-        return; // allowed through to the static files
+        return next(); // allowed through to the static files
       }
     }
   }
