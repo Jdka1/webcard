@@ -98,7 +98,7 @@ export function verifyPassword(password, salt, hash) {
 
 async function readJson(path, fallback) {
   try {
-    const result = await get(path, { access: 'private' });
+    const result = await get(path, { access: 'private', useCache: false });
     if (!result || result.statusCode === 404) return fallback;
     const text = await new Response(result.stream).text();
     return JSON.parse(text);
