@@ -18,6 +18,7 @@
     "node": "24.x"
   },
   "dependencies": {
-    "@vercel/functions": "^3.0.0"
+    "@vercel/functions": "^3.0.0",
+    "@vercel/blob": "^2.8.2"
   }
 }
