@@ -7,6 +7,7 @@ import { createHmac, timingSafeEqual } from 'node:crypto';
 // stored scrypt-hashed in a private Blob store, never in this repo.
 
 export const config = {
+  runtime: 'nodejs',
   matcher: ['/memories', '/memories/:path*', '/api/memories/:path*'],
 };
 
