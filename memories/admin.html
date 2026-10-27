@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="robots" content="noindex, nofollow" />
+    <title>Memories · Admin</title>
+    <link rel="icon" href="/public/favicon.jpeg" type="image/jpeg" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Fragment+Mono&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="/src/memories.css" />
+  </head>
+  <body class="memories-page admin-page">
+
+    <header class="memories-head">
+      <h1>memories · admin_</h1>
+      <p class="memories-sub">only you can see this screen. <a href="/memories/" class="admin-link">view the board →</a></p>
+    </header>
+
+    <section class="admin-section" id="people-section">
+      <h2>people</h2>
+      <p class="admin-hint">each person gets their own name + password. revoking takes effect on their next visit.</p>
+      <ul id="people-list" class="people-list"></ul>
+      <form id="add-person" class="admin-form">
+        <input id="new-name" type="text" placeholder="name" required />
+        <input id="new-pass" type="text" placeholder="password" required />
+        <button type="button" id="gen-pass">generate</button>
+        <button type="submit">add</button>
+      </form>
+      <p id="new-person-note" class="admin-note" hidden></p>
+    </section>
+
+    <section class="admin-section" id="photos-section">
+      <h2>photos</h2>
+      <p class="admin-hint">uploads over ~4.5MB are rejected for now (host limit) - resize big phone shots first.</p>
+      <form id="upload-form" class="admin-form">
+        <input id="photo-file" type="file" accept="image/*" multiple required />
+        <button type="submit">upload</button>
+      </form>
+      <p id="upload-note" class="admin-note" hidden></p>
+      <ul id="photo-list" class="admin-photos"></ul>
+    </section>
+
+    <script src="/src/memories-admin.js"></script>
+  </body>
+</html>
