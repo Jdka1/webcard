@@ -1,0 +1,135 @@
+/* Memories board - private sub-page. Reuses the site's dark palette and
+   Fragment Mono, but intentionally separate from styles.css so the main
+   card and photography page are untouched. */
+
+:root {
+  --bg: #0e0e0e;
+  --text: #e8e4de;
+  --muted: #52524e;
+  --bio-text: #aaa6a0;
+  --accent: #c8b89a;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body.memories-page {
+  background: var(--bg);
+  color: var(--text);
+  font-family: "Fragment Mono", monospace;
+  min-height: 100vh;
+  padding: 48px 5vw 96px;
+}
+
+.memories-head h1 {
+  font-size: 20px;
+  font-weight: 400;
+  letter-spacing: 0.02em;
+}
+
+.memories-head h1::after {
+  content: "";
+  display: inline-block;
+  width: 0.55em;
+  height: 1em;
+  margin-left: 2px;
+  background: var(--text);
+  vertical-align: text-bottom;
+  animation: blink 1.1s steps(1) infinite;
+}
+
+@keyframes blink { 50% { opacity: 0; } }
+
+.memories-sub {
+  margin-top: 8px;
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.board {
+  margin-top: 40px;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+}
+
+.tile {
+  position: relative;
+  aspect-ratio: 1 / 1;
+  overflow: hidden;
+  cursor: pointer;
+  background: #161616;
+}
+
+.tile img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: opacity 200ms ease;
+}
+
+.tile figcaption {
+  position: absolute;
+  inset: auto 0 0 0;
+  padding: 24px 12px 10px;
+  font-size: 11px;
+  line-height: 1.5;
+  background: linear-gradient(transparent, rgba(14, 14, 14, 0.88));
+  opacity: 0;
+  transition: opacity 200ms ease;
+}
+
+.tile:hover figcaption,
+.tile:focus-within figcaption { opacity: 1; }
+
+.tile figcaption em { font-style: normal; color: var(--text); display: block; }
+.tile .tile-loc { color: var(--bio-text); }
+
+@media (max-width: 720px) {
+  .board { grid-template-columns: repeat(2, 1fr); gap: 6px; }
+  body.memories-page { padding: 32px 4vw 64px; }
+  .tile figcaption { opacity: 1; } /* no hover on touch - always show */
+}
+
+/* Lightbox */
+.mem-lightbox {
+  position: fixed;
+  inset: 0;
+  background: rgba(10, 10, 10, 0.94);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  z-index: 50;
+  cursor: default;
+}
+
+.mem-lightbox img {
+  max-width: 88vw;
+  max-height: 78vh;
+  object-fit: contain;
+}
+
+.mem-lightbox .mem-cap {
+  margin-top: 14px;
+  font-size: 12px;
+  color: var(--bio-text);
+  text-align: center;
+}
+
+.mem-lb-btn {
+  position: fixed;
+  background: none;
+  border: none;
+  color: var(--muted);
+  font-family: inherit;
+  font-size: 22px;
+  cursor: pointer;
+  padding: 12px;
+  transition: color 150ms ease;
+}
+
+.mem-lb-btn:hover { color: var(--accent); }
+.mem-lb-close { top: 18px; right: 22px; }
+.mem-lb-prev { left: 14px; top: 50%; transform: translateY(-50%); }
+.mem-lb-next { right: 14px; top: 50%; transform: translateY(-50%); }
