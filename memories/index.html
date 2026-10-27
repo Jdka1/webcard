@@ -15,7 +15,7 @@
 
     <header class="memories-head">
       <h1>memories_</h1>
-      <p class="memories-sub">a private board. if you can see this, you were let in.</p>
+      <p class="memories-sub">a private board. if you can see this, you were let in. <a href="/memories/login.html" class="admin-link" onclick="fetch('/api/memories/logout',{method:'POST'}).finally(()=>location.href='/memories/login.html');return false;">log out</a></p>
     </header>
 
     <main class="board" id="board" aria-label="Memory board">
