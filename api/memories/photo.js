@@ -1,8 +1,8 @@
 import { Readable } from 'node:stream';
-import { requireSession, loadManifest, getBlob } from './_lib.js';
+import { requireActiveSession, loadManifest, getBlob } from './_lib.js';
 
 export default async function handler(req, res) {
-  const session = requireSession(req, res);
+  const session = requireActiveSession(req, res);
   if (!session) return;
   const { id } = req.query || {};
   const manifest = await loadManifest();
