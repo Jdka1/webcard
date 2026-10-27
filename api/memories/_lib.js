@@ -21,6 +21,28 @@ export function sessionFromReq(req, secret) {
   const m = header.match(/(?:^|;\s*)mem_session=([^;]+)/);
   if (!m) return null;
   const dot = m[1].lastIndexOf('.');
+import { put, get, del } from '@vercel/blob';
+
+const USERS_PATH = 'memories-store/users.json';
+const MANIFEST_PATH = 'memories-store/manifest.json';
+
+// ---- sessions ----
+
+export function signValue(value, secret) {
+  return crypto.createHmac('sha256', secret).update(value).digest('base64url');
+}
+
+export function makeSession(payload, secret) {
+  const full = { ...payload, exp: Date.now() + 30 * 24 * 3600 * 1000 };
+  const b64 = Buffer.from(JSON.stringify(full)).toString('base64url');
+  return `${b64}.${signValue(b64, secret)}`;
+}
+
+export function sessionFromReq(req, secret) {
+  const header = req.headers.cookie || '';
+  const m = header.match(/(?:^|;\s*)mem_session=([^;]+)/);
+  if (!m) return null;
+  const dot = m[1].lastIndexOf('.');
   if (dot < 0) return null;
   const b64 = m[1].slice(0, dot);
   const sig = m[1].slice(dot + 1);
@@ -52,6 +74,22 @@ export function requireOwner(req, res) {
   if (!session) return null;
   if (session.role !== 'owner') {
     res.status(403).json({ error: 'owner only' });
+    return null;
+  }
+  return session;
+}
+
+
+// Re-checks that a viewer's account is still active on every content request,
+// so revoking someone kills their already-issued session immediately.
+export async function requireActiveSession(req, res) {
+  const session = requireSession(req, res);
+  if (!session) return null;
+  if (session.role === 'owner') return session;
+  const users = await loadUsers();
+  const u = users.find((x) => x.username === session.u);
+  if (!u || !u.active) {
+    res.status(401).json({ error: 'access revoked' });
     return null;
   }
   return session;
