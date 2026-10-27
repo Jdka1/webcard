@@ -21,28 +21,6 @@ export function sessionFromReq(req, secret) {
   const m = header.match(/(?:^|;\s*)mem_session=([^;]+)/);
   if (!m) return null;
   const dot = m[1].lastIndexOf('.');
-import { put, get, del } from '@vercel/blob';
-
-const USERS_PATH = 'memories-store/users.json';
-const MANIFEST_PATH = 'memories-store/manifest.json';
-
-// ---- sessions ----
-
-export function signValue(value, secret) {
-  return crypto.createHmac('sha256', secret).update(value).digest('base64url');
-}
-
-export function makeSession(payload, secret) {
-  const full = { ...payload, exp: Date.now() + 30 * 24 * 3600 * 1000 };
-  const b64 = Buffer.from(JSON.stringify(full)).toString('base64url');
-  return `${b64}.${signValue(b64, secret)}`;
-}
-
-export function sessionFromReq(req, secret) {
-  const header = req.headers.cookie || '';
-  const m = header.match(/(?:^|;\s*)mem_session=([^;]+)/);
-  if (!m) return null;
-  const dot = m[1].lastIndexOf('.');
   if (dot < 0) return null;
   const b64 = m[1].slice(0, dot);
   const sig = m[1].slice(dot + 1);
