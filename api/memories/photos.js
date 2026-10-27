@@ -1,7 +1,7 @@
-import { requireSession, loadManifest } from './_lib.js';
+import { requireActiveSession, loadManifest } from './_lib.js';
 
 export default async function handler(req, res) {
-  const session = requireSession(req, res);
+  const session = requireActiveSession(req, res);
   if (!session) return;
   const manifest = await loadManifest();
   const photos = manifest
