@@ -15,7 +15,7 @@
 
     <header class="memories-head">
       <h1>memories · admin_</h1>
-      <p class="memories-sub">only you can see this screen. <a href="/memories/" class="admin-link">view the board →</a></p>
+      <p class="memories-sub">only you can see this screen. <a href="/memories/" class="admin-link">view the board →</a> <a href="/memories/login.html" class="admin-link" onclick="fetch('/api/memories/logout',{method:'POST'}).finally(()=>location.href='/memories/login.html');return false;">log out</a></p>
     </header>
 
     <section class="admin-section" id="people-section">
