@@ -133,3 +133,48 @@ body.memories-page {
 .mem-lb-close { top: 18px; right: 22px; }
 .mem-lb-prev { left: 14px; top: 50%; transform: translateY(-50%); }
 .mem-lb-next { right: 14px; top: 50%; transform: translateY(-50%); }
+
+/* Login page */
+.login-page { display: flex; align-items: center; justify-content: center; }
+.login-box { width: min(320px, 90vw); }
+.login-box h1 { font-size: 20px; font-weight: 400; }
+.login-box form { margin-top: 28px; display: flex; flex-direction: column; gap: 12px; }
+.login-box input {
+  background: none; border: none; border-bottom: 1px solid var(--muted);
+  color: var(--text); font-family: inherit; font-size: 13px; padding: 8px 0; outline: none;
+}
+.login-box input:focus { border-bottom-color: var(--text); }
+.login-box button {
+  margin-top: 8px; background: none; border: 1px solid var(--muted); color: var(--text);
+  font-family: inherit; font-size: 12px; padding: 10px; cursor: pointer;
+}
+.login-box button:hover { border-color: var(--accent); color: var(--accent); }
+.login-error { margin-top: 14px; font-size: 11px; color: var(--accent); }
+
+/* Admin page */
+.admin-link { color: var(--bio-text); }
+.admin-section { margin-top: 48px; max-width: 720px; }
+.admin-section h2 { font-size: 14px; font-weight: 400; }
+.admin-hint { margin-top: 6px; font-size: 11px; color: var(--muted); }
+.admin-note { margin-top: 12px; font-size: 11px; color: var(--accent); word-break: break-all; }
+.people-list { margin-top: 20px; list-style: none; }
+.people-list li { display: flex; align-items: baseline; gap: 12px; padding: 8px 0; font-size: 12px; border-bottom: 1px solid #1c1c1a; }
+.people-list .p-meta { color: var(--muted); font-size: 11px; }
+.people-list button, .admin-form button, .row-btns button {
+  background: none; border: none; color: var(--bio-text); font-family: inherit;
+  font-size: 11px; cursor: pointer; padding: 2px 4px; text-decoration: underline;
+}
+.people-list button:hover, .admin-form button:hover, .row-btns button:hover { color: var(--accent); }
+.people-list .empty, .admin-photos .empty, .board-empty { color: var(--muted); font-size: 12px; }
+.admin-form { margin-top: 16px; display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
+.admin-form input[type="text"], .admin-photo input {
+  background: none; border: none; border-bottom: 1px solid var(--muted);
+  color: var(--text); font-family: inherit; font-size: 12px; padding: 6px 0; outline: none;
+}
+.admin-form input[type="file"] { color: var(--muted); font-family: inherit; font-size: 11px; }
+.admin-photos { margin-top: 20px; list-style: none; display: flex; flex-direction: column; gap: 20px; }
+.admin-photo { display: grid; grid-template-columns: 120px 1fr 1fr auto; gap: 14px; align-items: center; }
+.admin-photo img { width: 120px; height: 120px; object-fit: cover; }
+.row-btns { display: flex; gap: 8px; }
+.row-btns .danger { color: #b0715c; }
+@media (max-width: 720px) { .admin-photo { grid-template-columns: 80px 1fr; } .admin-photo img { width: 80px; height: 80px; } }

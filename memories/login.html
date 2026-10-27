@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="robots" content="noindex, nofollow" />
+    <title>Memories</title>
+    <link rel="icon" href="/public/favicon.jpeg" type="image/jpeg" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Fragment+Mono&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="/src/memories.css" />
+  </head>
+  <body class="memories-page login-page">
+    <main class="login-box">
+      <h1>memories_</h1>
+      <p class="memories-sub">this page is invite-only.</p>
+      <form id="login-form">
+        <input id="username" name="username" type="text" autocomplete="username" placeholder="name" required />
+        <input id="password" name="password" type="password" autocomplete="current-password" placeholder="password" required />
+        <button type="submit">enter</button>
+      </form>
+      <p id="login-error" class="login-error" hidden>wrong name or password</p>
+    </main>
+    <script>
+      const form = document.getElementById('login-form');
+      form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const err = document.getElementById('login-error');
+        err.hidden = true;
+        const res = await fetch('/api/memories/login', {
+          method: 'POST',
+          headers: { 'content-type': 'application/json' },
+          body: JSON.stringify({
+            username: document.getElementById('username').value.trim(),
+            password: document.getElementById('password').value,
+          }),
+        });
+        if (res.ok) {
+          const data = await res.json();
+          const next = new URLSearchParams(location.search).get('next');
+          location.href = data.role === 'owner' ? '/memories/admin.html' : (next && next.startsWith('/memories') ? next : '/memories/');
+        } else {
+          err.hidden = false;
+        }
+      });
+    </script>
+  </body>
+</html>

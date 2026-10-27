@@ -1,47 +1,66 @@
-// Access gate for the private memories board.
-//
-// Runs before the filesystem for the matched routes and requires HTTP Basic
-// auth. Credentials come from Vercel project environment variables so no
-// secret lives in the repo:
-//   MEMORIES_USER     (default "aryan")
-//   MEMORIES_PASSWORD (required; set in the Vercel dashboard, never commit)
-//
-// Both the page and its media are matched so the photos themselves are
-// protected, not just the HTML route.
-//
-// NOTE: this only takes effect on Vercel. The local `python3 -m http.server`
-// preview does not run middleware, which is fine for local layout checks.
-
 import { next } from '@vercel/functions';
+import { createHmac, timingSafeEqual } from 'node:crypto';
+
+// Session gate for the private memories board and its APIs.
+// A signed httpOnly cookie (mem_session) is issued by /api/memories/login
+// after a per-person username+password check. Passwords themselves are
+// stored scrypt-hashed in a private Blob store, never in this repo.
 
 export const config = {
-  matcher: ['/memories', '/memories/:path*', '/public/memories/:path*'],
+  matcher: ['/memories', '/memories/:path*', '/api/memories/:path*'],
 };
 
+const PUBLIC_PATHS = ['/memories/login.html', '/api/memories/login'];
+
+function sign(value, secret) {
+  return createHmac('sha256', secret).update(value).digest('base64url');
+}
+
+export function readSession(request, secret) {
+  const header = request.headers.get('cookie') || '';
+  const m = header.match(/(?:^|;\s*)mem_session=([^;]+)/);
+  if (!m) return null;
+  const dot = m[1].lastIndexOf('.');
+  if (dot < 0) return null;
+  const payloadB64 = m[1].slice(0, dot);
+  const sig = m[1].slice(dot + 1);
+  const expected = sign(payloadB64, secret);
+  const a = Buffer.from(sig);
+  const b = Buffer.from(expected);
+  if (a.length !== b.length || !timingSafeEqual(a, b)) return null;
+  try {
+    const payload = JSON.parse(Buffer.from(payloadB64, 'base64url').toString('utf8'));
+    if (!payload.exp || payload.exp < Date.now()) return null;
+    return payload;
+  } catch {
+    return null;
+  }
+}
+
 export default function middleware(request) {
-  const expectedUser = process.env.MEMORIES_USER || 'aryan';
-  const expectedPass = process.env.MEMORIES_PASSWORD;
+  const url = new URL(request.url);
+  const path = url.pathname;
+  if (PUBLIC_PATHS.includes(path)) return next();
 
-  if (!expectedPass) {
-    return new Response('Memories gate is not configured.', { status: 500 });
-  }
+  const secret = process.env.MEMORIES_SESSION_SECRET;
+  if (!secret) return new Response('Memories gate is not configured.', { status: 500 });
 
-  const header = request.headers.get('authorization');
-  if (header) {
-    const [scheme, encoded] = header.split(' ');
-    if (scheme === 'Basic' && encoded) {
-      const decoded = atob(encoded);
-      const sep = decoded.indexOf(':');
-      const user = decoded.slice(0, sep);
-      const pass = decoded.slice(sep + 1);
-      if (user === expectedUser && pass === expectedPass) {
-        return next(); // allowed through to the static files
-      }
+  const session = readSession(request, secret);
+  if (session) {
+    // The owner screen is owner-only even for signed-in viewers.
+    if (path === '/memories/admin.html' && session.role !== 'owner') {
+      return Response.redirect(new URL('/memories/', request.url), 302);
     }
+    return next();
   }
 
-  return new Response('Authentication required.', {
-    status: 401,
-    headers: { 'WWW-Authenticate': 'Basic realm="memories", charset="UTF-8"' },
-  });
+  if (path.startsWith('/api/')) {
+    return new Response(JSON.stringify({ error: 'authentication required' }), {
+      status: 401,
+      headers: { 'content-type': 'application/json' },
+    });
+  }
+  const login = new URL('/memories/login.html', request.url);
+  login.searchParams.set('next', path);
+  return Response.redirect(login, 302);
 }
