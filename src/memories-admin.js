@@ -13,6 +13,7 @@
     if (raw) { opts.body = body; }
     else if (body !== undefined) { opts.headers['content-type'] = 'application/json'; opts.body = JSON.stringify(body); }
     const res = await fetch(path, opts);
+    if (res.status === 503) { const n = document.getElementById('upload-note'); if (n) { n.textContent = 'server busy, that change did not save - try again'; n.hidden = false; } }
     if (res.status === 401 || res.status === 403) { location.href = LOGIN + '?next=' + encodeURIComponent(location.pathname); throw new Error('auth'); }
     return res;
   }
