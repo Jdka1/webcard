@@ -174,6 +174,13 @@
   const dz = document.getElementById('dropzone');
   const fileInput = document.getElementById('photo-file');
 
+  const EXT_TYPE = { mov: 'video/quicktime', mp4: 'video/mp4', m4v: 'video/x-m4v', webm: 'video/webm', '3gp': 'video/3gpp', mpg: 'video/mpeg', mpeg: 'video/mpeg', jpg: 'image/jpeg', jpeg: 'image/jpeg', png: 'image/png', webp: 'image/webp', gif: 'image/gif', heic: 'image/heic', heif: 'image/heic' };
+  const extOf = (n) => (String(n).split('.').pop() || '').toLowerCase();
+  // Some drags hand over files with an empty MIME type; fall back to the extension.
+  const typed = (f) => (f.type || !EXT_TYPE[extOf(f.name)] ? f : new File([f], f.name, { type: EXT_TYPE[extOf(f.name)] }));
+  const mb = (n) => (n / 1048576 >= 0.1 ? (n / 1048576).toFixed(1) + ' MB' : Math.max(1, Math.round(n / 1024)) + ' KB');
+  const describe = (f) => `${f.name || 'unnamed'} (${f.type || 'unknown type'}, ${mb(f.size)})`;
+
   // Convert HEIC and shrink anything over the host limit so Photos-app
   // shots (Mac drag or phone library) upload without manual resizing.
   async function prepFile(file) {
@@ -242,28 +249,40 @@
     }
   }
 
-  async function processFiles(files) {
+  async function processFiles(rawFiles, rejected = []) {
     const el = document.getElementById('upload-note');
+    el.style.whiteSpace = 'pre-line';
+    const files = rawFiles.map(typed);
+    const lines = rejected.map((f) => `skipped ${describe(f)}: not a photo or video type`);
     let ok = 0;
     let skipped = 0;
-    note(el, files.length > 1 ? `preparing ${files.length} item${files.length > 1 ? 's' : ''}…` : 'preparing…');
+    const show = (extra) => note(el, lines.concat(extra ? [extra] : []).join('\n'));
     for (let i = 0; i < files.length; i++) {
-      note(el, `uploading ${i + 1} of ${files.length}…`);
-      const f = await prepFile(files[i]);
-      if (!f) { skipped++; continue; }
-      if (f.type.startsWith('video/') || f.size > LIMIT) {
-        const done = await clientUpload(f);
-        if (done) ok++; else skipped++;
-        continue;
-      }
-      const res = await api(API + '/admin/upload', 'POST', f, true);
-      if (res.ok) ok++; else skipped++;
+      const orig = files[i];
+      show(`uploading ${i + 1} of ${files.length}: ${describe(orig)}…`);
+      const f = await prepFile(orig);
+      if (!f) { skipped++; lines.push(`skipped ${describe(orig)}: could not convert or shrink`); continue; }
+      const isVideo = f.type.startsWith('video/');
+      let done;
+      if (isVideo || f.size > LIMIT) done = await clientUpload(f);
+      else done = (await api(API + '/admin/upload', 'POST', f, true)).ok;
+      if (done) { ok++; lines.push(`uploaded ${describe(orig)} as ${isVideo ? 'video' : 'photo'}`); }
+      else { skipped++; lines.push(`failed ${describe(orig)}: upload did not finish`); }
     }
-    note(el, `uploaded ${ok}${skipped ? `, ${skipped} skipped (couldn't convert or upload)` : ''}`);
+    lines.push(`done: ${ok} uploaded${skipped ? `, ${skipped} not uploaded` : ''}`);
+    show();
     loadPhotos();
   }
 
-  const isMediaFile = (f) => f.type.startsWith('image/') || f.type.startsWith('video/') || /\.hei[cf]$/i.test(f.name);
+  function reportUnsupported(all) {
+    const bad = all.filter((f) => !isMediaFile(f));
+    if (!bad.length) return;
+    const el = document.getElementById('upload-note');
+    el.style.whiteSpace = 'pre-line';
+    note(el, bad.map((f) => `skipped ${describe(f)}: not a photo or video type`).join('\n'));
+  }
+
+  const isMediaFile = (f) => { const t = typed(f).type; return t.startsWith('image/') || t.startsWith('video/'); };
 
   dz.addEventListener('click', () => fileInput.click());
   dz.addEventListener('keydown', (e) => {
@@ -283,11 +302,18 @@
     })
   );
   dz.addEventListener('drop', (e) => {
-    const files = Array.from(e.dataTransfer.files).filter(isMediaFile);
-    if (files.length) processFiles(files);
+    const all = Array.from(e.dataTransfer.files);
+    const files = all.filter(isMediaFile);
+    if (files.length) processFiles(files, all.filter((f) => !isMediaFile(f)));
+    else reportUnsupported(all);
   });
   fileInput.addEventListener('change', () => {
-    if (fileInput.files.length) processFiles(Array.from(fileInput.files));
+    if (fileInput.files.length) {
+      const all = Array.from(fileInput.files);
+      const files = all.filter(isMediaFile);
+      if (files.length) processFiles(files, all.filter((f) => !isMediaFile(f)));
+      else reportUnsupported(all);
+    }
     fileInput.value = '';
   });
   // Paste a copied photo (e.g. copy in Photos/Preview, Cmd+V here).
