@@ -47,6 +47,7 @@
       const max = mq.matches ? 2 : 3;
       const cols = Math.max(1, Math.min(items.length, max));
       board.style.gridTemplateColumns = `repeat(${cols}, 1fr)`;
+      board.classList.toggle('board--single', cols === 1);
       tiles.forEach((t) => t.classList.toggle('featured', t.dataset.feat === '1' && cols === max));
     };
     layout();
