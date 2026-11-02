@@ -8,7 +8,7 @@
   --text: #e8e4de;
   --muted: #52524e;
   --bio-text: #aaa6a0;
-  --accent: #c8b89a;
+  --accent: #e04e39;
   --tile-bg: #161616;
   --border: #1c1c1a;
   --overlay: rgba(10, 10, 10, 0.94);
@@ -21,7 +21,7 @@
   --text: #201e1a;
   --muted: #6e6a61;
   --bio-text: #5c584f;
-  --accent: #8f7448;
+  --accent: #cf3a24;
   --tile-bg: #e4dfd2;
   --border: #d8d3c6;
   --overlay: rgba(244, 241, 234, 0.94);
@@ -87,8 +87,8 @@ body.memories-page.login-page {
 
 /* A lone photo stays fully visible and within the screen (no crop, no
    scroll) instead of becoming a full-width square. */
-.board--single .tile { aspect-ratio: auto; display: flex; justify-content: center; }
-.board--single .tile img { object-fit: contain; width: auto; height: auto; max-width: 100%; max-height: 82vh; }
+.board--single .tile { aspect-ratio: auto; display: flex; align-items: center; justify-content: center; }
+.board--single .tile img { object-fit: contain; width: 100%; height: auto; max-height: 76vh; margin: auto; }
 
 .tile {
   position: relative;
