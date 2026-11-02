@@ -3,11 +3,29 @@
    card and photography page are untouched. */
 
 :root {
+  color-scheme: dark;
   --bg: #0e0e0e;
   --text: #e8e4de;
   --muted: #52524e;
   --bio-text: #aaa6a0;
   --accent: #c8b89a;
+  --tile-bg: #161616;
+  --border: #1c1c1a;
+  --overlay: rgba(10, 10, 10, 0.94);
+  --danger: #b0715c;
+}
+
+:root[data-theme="light"] {
+  color-scheme: light;
+  --bg: #f4f1ea;
+  --text: #201e1a;
+  --muted: #6e6a61;
+  --bio-text: #5c584f;
+  --accent: #8f7448;
+  --tile-bg: #e4dfd2;
+  --border: #d8d3c6;
+  --overlay: rgba(244, 241, 234, 0.94);
+  --danger: #9c503a;
 }
 
 * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -17,6 +35,15 @@ body.memories-page {
   color: var(--text);
   font-family: "Fragment Mono", monospace;
   min-height: 100vh;
+  padding: 48px 0 96px;
+}
+
+.memories-head {
+  padding: 0 5vw;
+}
+
+body.memories-page.admin-page,
+body.memories-page.login-page {
   padding: 48px 5vw 96px;
 }
 
@@ -49,7 +76,13 @@ body.memories-page {
   margin-top: 40px;
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 10px;
+  grid-auto-flow: dense;
+  gap: 0;
+}
+
+.tile.featured {
+  grid-column: span 2;
+  grid-row: span 2;
 }
 
 .tile {
@@ -57,7 +90,7 @@ body.memories-page {
   aspect-ratio: 1 / 1;
   overflow: hidden;
   cursor: pointer;
-  background: #161616;
+  background: var(--tile-bg);
 }
 
 .tile img {
@@ -71,10 +104,10 @@ body.memories-page {
 .tile figcaption {
   position: absolute;
   inset: auto 0 0 0;
-  padding: 24px 12px 10px;
+  padding: 8px 12px 10px;
   font-size: 11px;
   line-height: 1.5;
-  background: linear-gradient(transparent, rgba(14, 14, 14, 0.88));
+  background: var(--bg);
   opacity: 0;
   transition: opacity 200ms ease;
 }
@@ -86,8 +119,10 @@ body.memories-page {
 .tile .tile-loc { color: var(--bio-text); }
 
 @media (max-width: 720px) {
-  .board { grid-template-columns: repeat(2, 1fr); gap: 6px; }
-  body.memories-page { padding: 32px 4vw 64px; }
+  .board { grid-template-columns: repeat(2, 1fr); }
+  body.memories-page { padding: 32px 0 64px; }
+  .memories-head { padding: 0 4vw; }
+  body.memories-page.admin-page, body.memories-page.login-page { padding: 32px 4vw 64px; }
   .tile figcaption { opacity: 1; } /* no hover on touch - always show */
 }
 
@@ -95,7 +130,7 @@ body.memories-page {
 .mem-lightbox {
   position: fixed;
   inset: 0;
-  background: rgba(10, 10, 10, 0.94);
+  background: var(--overlay);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -158,7 +193,7 @@ body.memories-page {
 .admin-hint { margin-top: 6px; font-size: 11px; color: var(--muted); }
 .admin-note { margin-top: 12px; font-size: 11px; color: var(--accent); word-break: break-all; }
 .people-list { margin-top: 20px; list-style: none; }
-.people-list li { display: flex; align-items: baseline; gap: 12px; padding: 8px 0; font-size: 12px; border-bottom: 1px solid #1c1c1a; }
+.people-list li { display: flex; align-items: baseline; gap: 12px; padding: 8px 0; font-size: 12px; border-bottom: 1px solid var(--border); }
 .people-list .p-meta { color: var(--muted); font-size: 11px; }
 .people-list button, .admin-form button, .row-btns button {
   background: none; border: none; color: var(--bio-text); font-family: inherit;
@@ -176,5 +211,48 @@ body.memories-page {
 .admin-photo { display: grid; grid-template-columns: 120px 1fr 1fr auto; gap: 14px; align-items: center; }
 .admin-photo img { width: 120px; height: 120px; object-fit: cover; }
 .row-btns { display: flex; gap: 8px; }
-.row-btns .danger { color: #b0715c; }
+.row-btns .danger { color: var(--danger); }
 @media (max-width: 720px) { .admin-photo { grid-template-columns: 80px 1fr; } .admin-photo img { width: 80px; height: 80px; } }
+
+/* Theme toggle */
+.theme-toggle {
+  position: fixed;
+  right: 18px;
+  bottom: 16px;
+  z-index: 40;
+  background: none;
+  border: none;
+  color: var(--muted);
+  font-family: inherit;
+  font-size: 11px;
+  letter-spacing: 0.02em;
+  cursor: pointer;
+  padding: 6px 4px;
+  transition: color 140ms ease;
+}
+.theme-toggle:hover { color: var(--accent); }
+.theme-toggle:focus-visible { outline: 1px solid var(--accent); outline-offset: 3px; }
+
+/* Upload dropzone */
+.dropzone {
+  margin-top: 16px;
+  border: 1px dashed var(--muted);
+  padding: 30px 16px;
+  text-align: center;
+  cursor: pointer;
+  user-select: none;
+  transition: border-color 150ms ease, color 150ms ease;
+}
+.dropzone .dropzone-main { display: block; font-size: 13px; color: var(--text); }
+.dropzone .dropzone-sub { display: block; margin-top: 6px; font-size: 11px; color: var(--muted); }
+.dropzone:hover, .dropzone:focus-visible { border-color: var(--accent); }
+.dropzone.drag-over { border-color: var(--accent); border-style: solid; }
+.dropzone.drag-over .dropzone-main { color: var(--accent); }
+
+/* Drag-to-reorder */
+.admin-photo { cursor: grab; }
+.admin-photo.dragging { opacity: 0.35; }
+.admin-photo.drag-over { outline: 1px dashed var(--accent); outline-offset: 4px; }
+.admin-photo.is-featured img { outline: 1px solid var(--accent); outline-offset: 2px; }
+.admin-photo input, .admin-photo button { cursor: auto; }
+.admin-photo button { cursor: pointer; }

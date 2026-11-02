@@ -3,6 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script>(function(){try{var t=localStorage.getItem('theme');if(t!=='light'&&t!=='dark'){t=window.matchMedia('(prefers-color-scheme: light)').matches?'light':'dark'}document.documentElement.dataset.theme=t}catch(e){document.documentElement.dataset.theme='dark'}})()</script>
     <meta name="description" content="Photography by Aryan Mehra." />
     <title>Photography · Aryan Mehra</title>
     <link rel="icon" href="/public/favicon.jpeg" type="image/jpeg" />
@@ -11,6 +12,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Fragment+Mono&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="/src/styles.css" />
+    <script src="/src/theme.js" defer></script>
   </head>
   <body class="photo-page">
 

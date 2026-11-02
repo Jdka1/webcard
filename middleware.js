@@ -8,10 +8,10 @@ import { createHmac, timingSafeEqual } from 'node:crypto';
 
 export const config = {
   runtime: 'nodejs',
-  matcher: ['/memories', '/memories/:path*', '/api/memories/:path*'],
+  matcher: ['/instagram', '/instagram/:path*', '/memories', '/memories/:path*', '/vision', '/vision/:path*', '/api/memories/:path*', '/api/vision/:path*'],
 };
 
-const PUBLIC_PATHS = ['/memories/login.html', '/api/memories/login'];
+const PUBLIC_PATHS = ['/instagram/login.html', '/api/memories/login'];
 
 function sign(value, secret) {
   return createHmac('sha256', secret).update(value).digest('base64url');
@@ -41,16 +41,41 @@ export function readSession(request, secret) {
 export default function middleware(request) {
   const url = new URL(request.url);
   const path = url.pathname;
+
+  // Legacy links: the board moved from /memories to /instagram.
+  if (path === '/memories' || path.startsWith('/memories/')) {
+    const target = new URL('/instagram' + path.slice('/memories'.length), request.url);
+    target.search = url.search;
+    return Response.redirect(target, 308);
+  }
+
   if (PUBLIC_PATHS.includes(path)) return next();
 
   const secret = process.env.MEMORIES_SESSION_SECRET;
   if (!secret) return new Response('Memories gate is not configured.', { status: 500 });
 
+  // The vision board is owner-only: signed-in viewers do not get in.
+  const isVision = path === '/vision' || path.startsWith('/vision/') || path.startsWith('/api/vision');
+  if (isVision) {
+    const session = readSession(request, secret);
+    if (session && session.role === 'owner') return next();
+    if (path.startsWith('/api/')) {
+      return new Response(JSON.stringify({ error: session ? 'owner only' : 'authentication required' }), {
+        status: session ? 403 : 401,
+        headers: { 'content-type': 'application/json' },
+      });
+    }
+    if (session) return Response.redirect(new URL('/instagram/', request.url), 302);
+    const login = new URL('/instagram/login.html', request.url);
+    login.searchParams.set('next', path);
+    return Response.redirect(login, 302);
+  }
+
   const session = readSession(request, secret);
   if (session) {
     // The owner screen is owner-only even for signed-in viewers.
-    if (path === '/memories/admin.html' && session.role !== 'owner') {
-      return Response.redirect(new URL('/memories/', request.url), 302);
+    if (path === '/instagram/admin.html' && session.role !== 'owner') {
+      return Response.redirect(new URL('/instagram/', request.url), 302);
     }
     return next();
   }
@@ -61,7 +86,7 @@ export default function middleware(request) {
       headers: { 'content-type': 'application/json' },
     });
   }
-  const login = new URL('/memories/login.html', request.url);
+  const login = new URL('/instagram/login.html', request.url);
   login.searchParams.set('next', path);
   return Response.redirect(login, 302);
 }

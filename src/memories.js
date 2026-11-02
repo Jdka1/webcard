@@ -1,6 +1,8 @@
 // Memories board (view-only). Loads the photo list from the gated API and
 // renders the grid; click a tile for the lightbox (arrows/keyboard/Escape).
 (function () {
+  const API = window.BOARD_API || '/api/memories';
+  const LOGIN = '/instagram/login.html';
   const board = document.getElementById('board');
   let tiles = [];
   let items = [];
@@ -8,8 +10,8 @@
   let box = null;
 
   async function load() {
-    const res = await fetch('/api/memories/photos');
-    if (res.status === 401) { location.href = '/memories/login.html'; return; }
+    const res = await fetch(API + '/photos');
+    if (res.status === 401 || res.status === 403) { location.href = LOGIN + '?next=' + encodeURIComponent(location.pathname); return; }
     const { photos } = await res.json();
     items = photos;
     if (!photos.length) {
@@ -19,6 +21,7 @@
     for (const p of photos) {
       const fig = document.createElement('figure');
       fig.className = 'tile';
+      if (p.featured) fig.classList.add('featured');
       const img = document.createElement('img');
       img.src = p.src;
       img.alt = [p.caption, p.loc].filter(Boolean).join(' · ') || 'memory';

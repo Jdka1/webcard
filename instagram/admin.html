@@ -3,6 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script>(function(){try{var t=localStorage.getItem('theme');if(t!=='light'&&t!=='dark'){t=window.matchMedia('(prefers-color-scheme: light)').matches?'light':'dark'}document.documentElement.dataset.theme=t}catch(e){document.documentElement.dataset.theme='dark'}})()</script>
     <meta name="robots" content="noindex, nofollow" />
     <title>Memories · Admin</title>
     <link rel="icon" href="/public/favicon.jpeg" type="image/jpeg" />
@@ -10,12 +11,13 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Fragment+Mono&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="/src/memories.css" />
+    <script src="/src/theme.js" defer></script>
   </head>
   <body class="memories-page admin-page">
 
     <header class="memories-head">
       <h1>memories · admin_</h1>
-      <p class="memories-sub">only you can see this screen. <a href="/memories/" class="admin-link">view the board →</a> <a href="/memories/login.html" class="admin-link" onclick="fetch('/api/memories/logout',{method:'POST'}).finally(()=>location.href='/memories/login.html');return false;">log out</a></p>
+      <p class="memories-sub">only you can see this screen. <a href="/instagram/" class="admin-link">view the board →</a> <a href="/instagram/login.html" class="admin-link" onclick="fetch('/api/memories/logout',{method:'POST'}).finally(()=>location.href='/instagram/login.html');return false;">log out</a></p>
     </header>
 
     <section class="admin-section" id="people-section">
@@ -33,15 +35,19 @@
 
     <section class="admin-section" id="photos-section">
       <h2>photos</h2>
-      <p class="admin-hint">uploads over ~4.5MB are rejected for now (host limit) - resize big phone shots first.</p>
+      <p class="admin-hint">drag photos straight in from the Photos app (Mac or phone), paste them, or tap the box to pick from your library. Big shots are converted and resized automatically.</p>
       <form id="upload-form" class="admin-form">
-        <input id="photo-file" type="file" accept="image/*" multiple required />
-        <button type="submit">upload</button>
+        <div id="dropzone" class="dropzone" role="button" tabindex="0" aria-label="Upload photos">
+          <span class="dropzone-main">drop photos here</span>
+          <span class="dropzone-sub">or tap to choose from your photo library</span>
+        </div>
+        <input id="photo-file" type="file" accept="image/*" multiple hidden />
       </form>
       <p id="upload-note" class="admin-note" hidden></p>
       <ul id="photo-list" class="admin-photos"></ul>
     </section>
 
+    <script src="https://cdn.jsdelivr.net/npm/heic2any@0.0.4/dist/heic2any.min.js"></script>
     <script src="/src/memories-admin.js"></script>
   </body>
 </html>

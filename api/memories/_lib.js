@@ -118,8 +118,8 @@ async function writeJson(path, data) {
 
 export const loadUsers = () => readJson(USERS_PATH, []);
 export const saveUsers = (users) => writeJson(USERS_PATH, users);
-export const loadManifest = () => readJson(MANIFEST_PATH, []);
-export const saveManifest = (manifest) => writeJson(MANIFEST_PATH, manifest);
+export const loadManifest = (path = MANIFEST_PATH) => readJson(path, []);
+export const saveManifest = (manifest, path = MANIFEST_PATH) => writeJson(path, manifest);
 export const getBlob = (path) => get(path, { access: 'private' });
 export const putBlob = (path, body, contentType) =>
   put(path, body, { access: 'private', addRandomSuffix: false, allowOverwrite: true, contentType });

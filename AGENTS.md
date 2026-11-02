@@ -116,3 +116,11 @@ X  GitHub  LinkedIn  YouTube
 - **No React / no build step** — the site is static content; a framework would add complexity with no benefit at this scale
 - **Left-aligned layout** — content sits at ~40% from the left on wide screens, not centered, to feel intentional rather than generic
 - **Experience column widths** — org column is fixed at 100px; don't widen it
+
+## Theme toggle, photo boards (added 2026-11)
+
+- **Light/dark theme**: every page runs a no-flash inline `<head>` script that sets `data-theme` from localStorage (`theme`) or the device preference; `src/theme.js` adds the `[ light ]/[ dark ]` toggle (fixed, bottom-right) and persists manual choices. Palettes are CSS variables in `src/styles.css` and `src/memories.css` under `:root[data-theme="light"]` — no hardcoded colors.
+- **Photo wall** (`/instagram`, moved from `/memories`; legacy URLs 308-redirect in `middleware.js`): edge-to-edge 3-column grid (2 on mobile), no gaps, `grid-auto-flow: dense`; photos flagged `featured` span 2x2. Board JS is shared: pages set `window.BOARD_API` before loading `src/memories.js`.
+- **Admin** (`/instagram/admin.html`): drag photos in from the Photos app, paste, or tap the dropzone; `src/memories-admin.js` converts HEIC (heic2any) and downscales over ~4.4MB client-side, then raw-POSTs each file. Reorder by dragging rows (saves the full order in one PATCH) or with ↑/↓; `feature` toggles the 2x2 span.
+- **Vision board** (`/vision`, admin `/vision/admin.html`): same wall + admin controls, owner-only. Middleware rejects non-owners before any page or `/api/vision/*` responds. Separate Blob store (`vision-store/`); viewer accounts never see it.
+- Photo APIs are per-board (`/api/memories/*`, `/api/vision/*`); the shared client JS takes the base from `window.BOARD_API`.

@@ -3,25 +3,28 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script>(function(){try{var t=localStorage.getItem('theme');if(t!=='light'&&t!=='dark'){t=window.matchMedia('(prefers-color-scheme: light)').matches?'light':'dark'}document.documentElement.dataset.theme=t}catch(e){document.documentElement.dataset.theme='dark'}})()</script>
     <meta name="robots" content="noindex, nofollow" />
-    <title>Memories</title>
+    <title>Vision board</title>
     <link rel="icon" href="/public/favicon.jpeg" type="image/jpeg" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Fragment+Mono&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="/src/memories.css" />
+    <script src="/src/theme.js" defer></script>
   </head>
   <body class="memories-page">
 
     <header class="memories-head">
-      <h1>memories_</h1>
-      <p class="memories-sub">a private board. if you can see this, you were let in. <a href="/memories/login.html" class="admin-link" onclick="fetch('/api/memories/logout',{method:'POST'}).finally(()=>location.href='/memories/login.html');return false;">log out</a></p>
+      <h1>vision board_</h1>
+      <p class="memories-sub"><a href="/vision/admin.html" class="admin-link">manage →</a> <a href="/instagram/login.html" class="admin-link" onclick="fetch('/api/memories/logout',{method:'POST'}).finally(()=>location.href='/instagram/login.html');return false;">log out</a></p>
     </header>
 
-    <main class="board" id="board" aria-label="Memory board">
+    <main class="board" id="board" aria-label="Vision board">
       <p class="board-empty" id="board-empty" hidden>nothing here yet.</p>
     </main>
 
+    <script>window.BOARD_API = "/api/vision";</script>
     <script src="/src/memories.js"></script>
   </body>
 </html>
