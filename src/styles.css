@@ -291,7 +291,9 @@ a.row:focus-visible {
   flex-wrap: wrap;
   gap: 0 22px;
   flex-basis: 100%;
-  margin-top: 14px;
+  margin-top: 22px;
+  padding-top: 18px;
+  border-top: 1px solid var(--dim);
 }
 
 .links a {
@@ -983,3 +985,11 @@ body.photo-page {
   outline: 1px solid var(--accent);
   outline-offset: 3px;
 }
+
+/* More prominent vermilion: links, dividers, headings (both themes). */
+.links a { color: var(--accent); }
+.links a::after { background: var(--accent); width: 100%; opacity: 0.35; }
+.links a:hover::after { opacity: 1; }
+#private-links { border-top-color: var(--accent); }
+.collection-page h1 { color: var(--accent); }
+.canon-item h2 a, .collection-nav a { color: var(--text); }
