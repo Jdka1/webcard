@@ -233,11 +233,29 @@
       }
     }
     try {
-      const blob = await upload(f.name, f, {
-        access: 'private',
-        handleUploadUrl: API + '/admin/upload',
-        onUploadProgress: (e) => { if (onProgress) onProgress(Math.round(e.percentage)); },
-      });
+      // The % readout uses a streamed fetch, which some networks refuse (the
+      // request fails and retries stuck at 0%). If no bytes move within 8s,
+      // abort and retry once with a plain upload (no % readout).
+      const ac = new AbortController();
+      let started = false;
+      let timer = setTimeout(() => ac.abort(), 8000);
+      let blob;
+      try {
+        blob = await upload(f.name, f, {
+          access: 'private',
+          handleUploadUrl: API + '/admin/upload',
+          abortSignal: ac.signal,
+          onUploadProgress: (e) => {
+            if (e.loaded > 0 && !started) { started = true; clearTimeout(timer); }
+            if (onProgress) onProgress(Math.round(e.percentage));
+          },
+        });
+      } catch (err) {
+        if (started || !ac.signal.aborted) throw err;
+        blob = await upload(f.name, f, { access: 'private', handleUploadUrl: API + '/admin/upload' });
+      } finally {
+        clearTimeout(timer);
+      }
       const res = await api(API + '/admin/upload', 'POST', {
         action: 'register',
         path: blob.pathname,
