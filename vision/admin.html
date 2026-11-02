@@ -22,15 +22,15 @@
 
     <section class="admin-section" id="photos-section">
       <h2>photos</h2>
-      <p class="admin-hint">drop files here, paste them, or tap the box to pick from your library. Big photos are converted automatically; videos upload as-is. If a clip dragged out of the Photos app arrives as image/jpeg, the status line below will say so; then pick it with the box instead or export the original from Photos first.</p>
+      <p class="admin-hint">drop files here, paste them, or click the box to choose files. Videos upload as-is.</p>
       <form id="upload-form" class="admin-form">
         <div id="dropzone" class="dropzone" role="button" tabindex="0" aria-label="Upload photos or videos">
           <span class="dropzone-main">drop photos or videos here</span>
-          <span class="dropzone-sub">or tap to choose from your photo library</span>
+          <span class="dropzone-sub">or click to choose files</span>
         </div>
         <input id="photo-file" type="file" accept="image/*,video/*" multiple hidden />
         <input id="video-file" type="file" accept="video/*" multiple hidden />
-        <p class="admin-hint"><a href="#" id="pick-video" class="admin-link">choose a video from your library</a> (opens the picker with videos only)</p>
+        <p class="admin-hint"><a href="#" id="pick-video" class="admin-link">choose a video file</a> &nbsp; on a Mac, the picker sidebar may list Media &gt; Photos (scroll down) - not every browser shows it</p>
       </form>
       <p id="upload-note" class="admin-note" hidden></p>
       <ul id="photo-list" class="admin-photos"></ul>
