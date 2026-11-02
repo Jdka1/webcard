@@ -31,10 +31,20 @@
       const fig = document.createElement('figure');
       fig.className = 'tile';
       fig.dataset.feat = p.featured ? '1' : '';
-      const img = document.createElement('img');
+      let img;
+      if (p.kind === 'video') {
+        img = document.createElement('video');
+        img.muted = true;
+        img.loop = true;
+        img.playsInline = true;
+        img.autoplay = true;
+        img.preload = 'metadata';
+      } else {
+        img = document.createElement('img');
+        img.loading = 'lazy';
+      }
       img.src = p.src;
       img.alt = [p.caption, p.loc].filter(Boolean).join(' · ') || 'memory';
-      img.loading = 'lazy';
       const cap = document.createElement('figcaption');
       const em = document.createElement('em');
       em.textContent = p.caption || '';
@@ -69,7 +79,15 @@
     const p = items[i];
     box = document.createElement('div');
     box.className = 'mem-lightbox';
-    const big = document.createElement('img');
+    let big;
+    if (p.kind === 'video') {
+      big = document.createElement('video');
+      big.controls = true;
+      big.autoplay = true;
+      big.playsInline = true;
+    } else {
+      big = document.createElement('img');
+    }
     big.src = p.src;
     big.alt = p.caption || 'memory';
     const c = document.createElement('div');

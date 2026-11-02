@@ -94,8 +94,11 @@
       li.className = 'admin-photo' + (p.featured ? ' is-featured' : '');
       li.dataset.id = p.id;
       li.draggable = true;
+      const thumb = p.kind === 'video'
+        ? `<video src="${p.src}" muted loop playsinline preload="metadata"></video>`
+        : `<img src="${p.src}" alt="" loading="lazy" />`;
       li.innerHTML = `
-        <img src="${p.src}" alt="" loading="lazy" />
+        ${thumb}
         <input class="cap" type="text" placeholder="caption" />
         <input class="loc" type="text" placeholder="place" />
         <div class="row-btns">
@@ -174,6 +177,7 @@
   // shots (Mac drag or phone library) upload without manual resizing.
   async function prepFile(file) {
     let f = file;
+    if (f.type.startsWith('video/')) return f; // videos upload as-is, client-direct
     if (/image\/hei[cf]/i.test(f.type) || /\.hei[cf]$/i.test(f.name)) {
       if (!window.heic2any) return null;
       try {
@@ -207,23 +211,58 @@
     }
   }
 
+  // Videos and oversized files go straight from the browser to the private
+  // blob store (token from the owner-only endpoint), then get registered.
+  async function clientUpload(f) {
+    let upload;
+    try {
+      ({ upload } = await import('https://esm.sh/@vercel/blob@2.8.2/client'));
+    } catch {
+      try {
+        ({ upload } = await import('https://cdn.jsdelivr.net/npm/@vercel/blob@2.8.2/client/+esm'));
+      } catch {
+        return false;
+      }
+    }
+    try {
+      const blob = await upload(f.name, f, {
+        access: 'private',
+        handleUploadUrl: API + '/admin/upload',
+      });
+      const res = await api(API + '/admin/upload', 'POST', {
+        action: 'register',
+        path: blob.pathname,
+        url: blob.url,
+        contentType: blob.contentType || f.type,
+      });
+      return res.ok;
+    } catch {
+      return false;
+    }
+  }
+
   async function processFiles(files) {
     const el = document.getElementById('upload-note');
     let ok = 0;
     let skipped = 0;
-    note(el, files.length > 1 ? `preparing ${files.length} photos…` : 'preparing…');
+    note(el, files.length > 1 ? `preparing ${files.length} item${files.length > 1 ? 's' : ''}…` : 'preparing…');
     for (let i = 0; i < files.length; i++) {
       note(el, `uploading ${i + 1} of ${files.length}…`);
       const f = await prepFile(files[i]);
       if (!f) { skipped++; continue; }
+      if (f.type.startsWith('video/') || f.size > LIMIT) {
+        const done = await clientUpload(f);
+        if (done) ok++; else skipped++;
+        continue;
+      }
       const res = await api(API + '/admin/upload', 'POST', f, true);
       if (res.ok) ok++; else skipped++;
     }
-    note(el, `uploaded ${ok}${skipped ? `, ${skipped} skipped (couldn't convert under the size limit)` : ''}`);
+    note(el, `uploaded ${ok}${skipped ? `, ${skipped} skipped (couldn't convert or upload)` : ''}`);
     loadPhotos();
   }
 
-  const isImageFile = (f) => f.type.startsWith('image/') || /\.hei[cf]$/i.test(f.name);
+  const isMediaFile = (f) => f.type.startsWith('image/') || f.type.startsWith('video/') || /\.hei[cf]$/i.test(f.name);
 
   dz.addEventListener('click', () => fileInput.click());
   dz.addEventListener('keydown', (e) => {
@@ -243,7 +282,7 @@
     })
   );
   dz.addEventListener('drop', (e) => {
-    const files = Array.from(e.dataTransfer.files).filter(isImageFile);
+    const files = Array.from(e.dataTransfer.files).filter(isMediaFile);
     if (files.length) processFiles(files);
   });
   fileInput.addEventListener('change', () => {
@@ -253,7 +292,7 @@
   // Paste a copied photo (e.g. copy in Photos/Preview, Cmd+V here).
   document.addEventListener('paste', (e) => {
     if (e.target.closest('input, textarea')) return;
-    const files = Array.from((e.clipboardData && e.clipboardData.files) || []).filter(isImageFile);
+    const files = Array.from((e.clipboardData && e.clipboardData.files) || []).filter(isMediaFile);
     if (files.length) {
       e.preventDefault();
       processFiles(files);

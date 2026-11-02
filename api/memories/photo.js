@@ -1,5 +1,4 @@
-import { Readable } from 'node:stream';
-import { requireActiveSession, loadManifest, getBlob } from './_lib.js';
+import { requireActiveSession, loadManifest, streamEntry } from './_lib.js';
 
 export default async function handler(req, res) {
   const session = await requireActiveSession(req, res);
@@ -8,11 +7,5 @@ export default async function handler(req, res) {
   const manifest = await loadManifest();
   const entry = manifest.find((p) => p.id === id);
   if (!entry) return res.status(404).json({ error: 'not found' });
-
-  const result = await getBlob(entry.path);
-  if (!result || result.statusCode === 404) return res.status(404).json({ error: 'not found' });
-
-  res.setHeader('content-type', result.blob?.contentType || 'image/jpeg');
-  res.setHeader('cache-control', 'private, no-store');
-  Readable.fromWeb(result.stream).pipe(res);
+  return streamEntry(req, res, entry);
 }

@@ -88,7 +88,7 @@ body.memories-page.login-page {
 /* A lone photo stays fully visible and within the screen (no crop, no
    scroll) instead of becoming a full-width square. */
 .board--single .tile { aspect-ratio: auto; display: flex; align-items: center; justify-content: center; }
-.board--single .tile img { object-fit: contain; width: 100%; height: auto; max-height: 76vh; margin: auto; }
+.board--single .tile img, .board--single .tile video { object-fit: contain; width: 100%; height: auto; max-height: 76vh; margin: auto; }
 
 .tile {
   position: relative;
@@ -98,7 +98,7 @@ body.memories-page.login-page {
   background: var(--tile-bg);
 }
 
-.tile img {
+.tile img, .tile video {
   width: 100%;
   height: 100%;
   object-fit: cover;
@@ -144,7 +144,7 @@ body.memories-page.login-page {
   cursor: default;
 }
 
-.mem-lightbox img {
+.mem-lightbox img, .mem-lightbox video {
   max-width: 88vw;
   max-height: 78vh;
   object-fit: contain;
@@ -214,10 +214,10 @@ body.memories-page.login-page {
 .admin-form input[type="file"] { color: var(--muted); font-family: inherit; font-size: 11px; }
 .admin-photos { margin-top: 20px; list-style: none; display: flex; flex-direction: column; gap: 20px; }
 .admin-photo { display: grid; grid-template-columns: 120px 1fr 1fr auto; gap: 14px; align-items: center; }
-.admin-photo img { width: 120px; height: 120px; object-fit: cover; }
+.admin-photo img, .admin-photo video { width: 120px; height: 120px; object-fit: cover; }
 .row-btns { display: flex; gap: 8px; }
 .row-btns .danger { color: var(--danger); }
-@media (max-width: 720px) { .admin-photo { grid-template-columns: 80px 1fr; } .admin-photo img { width: 80px; height: 80px; } }
+@media (max-width: 720px) { .admin-photo { grid-template-columns: 80px 1fr; } .admin-photo img, .admin-photo video { width: 80px; height: 80px; } }
 
 /* Theme toggle */
 .theme-toggle {
@@ -258,6 +258,6 @@ body.memories-page.login-page {
 .admin-photo { cursor: grab; }
 .admin-photo.dragging { opacity: 0.35; }
 .admin-photo.drag-over { outline: 1px dashed var(--accent); outline-offset: 4px; }
-.admin-photo.is-featured img { outline: 1px solid var(--accent); outline-offset: 2px; }
+.admin-photo.is-featured img, .admin-photo.is-featured video { outline: 1px solid var(--accent); outline-offset: 2px; }
 .admin-photo input, .admin-photo button { cursor: auto; }
 .admin-photo button { cursor: pointer; }

@@ -10,7 +10,7 @@ export default async function handler(req, res) {
   const photos = manifest
     .slice()
     .sort((a, b) => a.order - b.order)
-    .map(({ id, caption, loc, featured }) => ({ id, caption, loc, featured: !!featured, src: `/api/vision/photo?id=${encodeURIComponent(id)}` }));
+    .map(({ id, caption, loc, featured, kind }) => ({ id, caption, loc, featured: !!featured, kind: kind || 'image', src: `/api/vision/photo?id=${encodeURIComponent(id)}` }));
   res.setHeader('cache-control', 'private, no-store');
   return res.status(200).json({ photos });
 }

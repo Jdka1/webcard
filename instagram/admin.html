@@ -35,13 +35,13 @@
 
     <section class="admin-section" id="photos-section">
       <h2>photos</h2>
-      <p class="admin-hint">drag photos straight in from the Photos app (Mac or phone), paste them, or tap the box to pick from your library. Big shots are converted and resized automatically.</p>
+      <p class="admin-hint">drag photos or videos straight in from the Photos app (Mac or phone), paste them, or tap the box to pick from your library. Big shots are converted automatically; videos upload as-is.</p>
       <form id="upload-form" class="admin-form">
-        <div id="dropzone" class="dropzone" role="button" tabindex="0" aria-label="Upload photos">
-          <span class="dropzone-main">drop photos here</span>
+        <div id="dropzone" class="dropzone" role="button" tabindex="0" aria-label="Upload photos or videos">
+          <span class="dropzone-main">drop photos or videos here</span>
           <span class="dropzone-sub">or tap to choose from your photo library</span>
         </div>
-        <input id="photo-file" type="file" accept="image/*" multiple hidden />
+        <input id="photo-file" type="file" accept="image/*,video/*" multiple hidden />
       </form>
       <p id="upload-note" class="admin-note" hidden></p>
       <ul id="photo-list" class="admin-photos"></ul>
