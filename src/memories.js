@@ -103,6 +103,12 @@
     };
     box.appendChild(big);
     box.appendChild(c);
+    if (p.kind === 'video') {
+      box.appendChild(mk('mem-lb-full', '⛶', () => {
+        if (big.requestFullscreen) big.requestFullscreen().catch(() => {});
+        else if (big.webkitEnterFullscreen) big.webkitEnterFullscreen();
+      }));
+    }
     box.appendChild(mk('mem-lb-close', '×', close));
     box.appendChild(mk('mem-lb-prev', '←', () => step(-1)));
     box.appendChild(mk('mem-lb-next', '→', () => step(1)));

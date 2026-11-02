@@ -145,13 +145,18 @@ body.memories-page.login-page {
 }
 
 .mem-lightbox img, .mem-lightbox video {
-  max-width: 88vw;
-  max-height: 78vh;
+  max-width: 98vw;
+  max-height: 92vh;
+  max-height: 92dvh;
   object-fit: contain;
 }
 
 .mem-lightbox .mem-cap {
-  margin-top: 14px;
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 8px;
+  pointer-events: none;
   font-size: 12px;
   color: var(--bio-text);
   text-align: center;
@@ -266,3 +271,5 @@ body.memories-page.login-page {
 .memories-head h1 { color: var(--accent); }
 .memories-sub a, .admin-link { color: var(--accent); }
 .admin-section h2 { color: var(--accent); }
+
+.mem-lb-full { top: 18px; right: 70px; font-size: 16px; }

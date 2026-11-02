@@ -243,7 +243,7 @@ export async function streamEntry(req, res, entry) {
 // so concurrent uploads/edits cannot overwrite each other. A failed read
 // aborts instead of being treated as an empty manifest (that would wipe it).
 export async function updateManifest(path, fn) {
-  for (let attempt = 0; attempt < 8; attempt++) {
+  for (let attempt = 0; attempt < 14; attempt++) {
     const r = await get(path, { access: 'private', useCache: false });
     let data = [];
     let etag;
@@ -265,7 +265,7 @@ export async function updateManifest(path, fn) {
       return out;
     } catch (e) {
       const msg = `${e && e.name} ${e && e.message}`;
-      if (/precondition/i.test(msg)) { await new Promise((ok) => setTimeout(ok, 60 + Math.random() * 120)); continue; }
+      if (/precondition/i.test(msg)) { await new Promise((ok) => setTimeout(ok, 80 + Math.random() * 220)); continue; }
       throw e;
     }
   }
