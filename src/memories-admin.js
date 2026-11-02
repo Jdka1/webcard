@@ -221,7 +221,7 @@
 
   // Videos and oversized files go straight from the browser to the private
   // blob store (token from the owner-only endpoint), then get registered.
-  async function clientUpload(f) {
+  async function clientUpload(f, onProgress) {
     let upload;
     try {
       ({ upload } = await import('https://esm.sh/@vercel/blob@2.8.2/client'));
@@ -236,6 +236,7 @@
       const blob = await upload(f.name, f, {
         access: 'private',
         handleUploadUrl: API + '/admin/upload',
+        onUploadProgress: (e) => { if (onProgress) onProgress(Math.round(e.percentage)); },
       });
       const res = await api(API + '/admin/upload', 'POST', {
         action: 'register',
@@ -249,11 +250,11 @@
     }
   }
 
-  async function processFiles(rawFiles, rejected = []) {
+  async function processFiles(rawFiles, rejected = [], offered = '') {
     const el = document.getElementById('upload-note');
     el.style.whiteSpace = 'pre-line';
     const files = rawFiles.map(typed);
-    const lines = rejected.map((f) => `skipped ${describe(f)}: not a photo or video type`);
+    const lines = (offered ? [offered] : []).concat(rejected.map((f) => `skipped ${describe(f)}: not a photo or video type`));
     let ok = 0;
     let skipped = 0;
     const show = (extra) => note(el, lines.concat(extra ? [extra] : []).join('\n'));
@@ -264,7 +265,7 @@
       if (!f) { skipped++; lines.push(`skipped ${describe(orig)}: could not convert or shrink`); continue; }
       const isVideo = f.type.startsWith('video/');
       let done;
-      if (isVideo || f.size > LIMIT) done = await clientUpload(f);
+      if (isVideo || f.size > LIMIT) done = await clientUpload(f, (pct) => show(`uploading ${i + 1} of ${files.length}: ${describe(orig)} ${pct}%`));
       else done = (await api(API + '/admin/upload', 'POST', f, true)).ok;
       if (done) { ok++; lines.push(`uploaded ${describe(orig)} as ${isVideo ? 'video' : 'photo'}`); }
       else { skipped++; lines.push(`failed ${describe(orig)}: upload did not finish`); }
@@ -304,7 +305,9 @@
   dz.addEventListener('drop', (e) => {
     const all = Array.from(e.dataTransfer.files);
     const files = all.filter(isMediaFile);
-    if (files.length) processFiles(files, all.filter((f) => !isMediaFile(f)));
+    // Record exactly what the drag carried, so a Photos drag that hands over only a still is visible.
+    const offered = 'drag carried: ' + (Array.from(e.dataTransfer.items || []).map((it) => `${it.kind}${it.type ? ':' + it.type : ''}`).join(', ') || 'nothing');
+    if (files.length) processFiles(files, all.filter((f) => !isMediaFile(f)), offered);
     else reportUnsupported(all);
   });
   fileInput.addEventListener('change', () => {
