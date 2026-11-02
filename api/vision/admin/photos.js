@@ -1,52 +1,6 @@
-import { requireOwner, loadManifest, saveManifest, delBlob } from '../../memories/_lib.js';
+import { adminPhotosHandler } from '../../memories/_lib.js';
 
-const MANIFEST = 'vision-store/manifest.json';
-
-// Owner-only vision board manager: edit captions/place, feature, reorder, delete.
-export default async function handler(req, res) {
-  const owner = requireOwner(req, res);
-  if (!owner) return;
-
-  const manifest = await loadManifest(MANIFEST);
-
-  if (req.method === 'PATCH') {
-    const { id, caption, loc, direction, featured, order } = req.body || {};
-    if (Array.isArray(order)) {
-      order.forEach((oid, i) => {
-        const m = manifest.find((p) => p.id === oid);
-        if (m) m.order = i;
-      });
-      await saveManifest(manifest, MANIFEST);
-      return res.status(200).json({ ok: true });
-    }
-    const idx = manifest.findIndex((p) => p.id === id);
-    if (idx < 0) return res.status(404).json({ error: 'not found' });
-    if (caption !== undefined) manifest[idx].caption = caption;
-    if (loc !== undefined) manifest[idx].loc = loc;
-    if (featured !== undefined) manifest[idx].featured = !!featured;
-    if (direction) {
-      const sorted = manifest.slice().sort((a, b) => a.order - b.order);
-      const pos = sorted.findIndex((p) => p.id === id);
-      const swapWith = direction === 'up' ? pos - 1 : pos + 1;
-      if (swapWith >= 0 && swapWith < sorted.length) {
-        const tmp = sorted[pos].order;
-        sorted[pos].order = sorted[swapWith].order;
-        sorted[swapWith].order = tmp;
-      }
-    }
-    await saveManifest(manifest, MANIFEST);
-    return res.status(200).json({ ok: true });
-  }
-
-  if (req.method === 'DELETE') {
-    const { id } = req.body || {};
-    const idx = manifest.findIndex((p) => p.id === id);
-    if (idx < 0) return res.status(404).json({ error: 'not found' });
-    try { await delBlob(manifest[idx].path); } catch { /* blob may already be gone */ }
-    manifest.splice(idx, 1);
-    await saveManifest(manifest, MANIFEST);
-    return res.status(200).json({ ok: true });
-  }
-
-  return res.status(405).json({ error: 'method not allowed' });
+// Owner-only vision board manager: same actions as the memories board.
+export default function handler(req, res) {
+  return adminPhotosHandler(req, res, 'vision-store/manifest.json');
 }

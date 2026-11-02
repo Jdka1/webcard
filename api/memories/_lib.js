@@ -169,10 +169,11 @@ export async function adminUploadHandler(req, res, storePrefix, manifestPath) {
       }
       const kind = String(contentType || '').startsWith('video/') ? 'video' : 'image';
       const id = crypto.randomBytes(8).toString('hex');
-      const manifest = await loadManifest(manifestPath);
-      const order = manifest.length ? Math.max(...manifest.map((p) => p.order)) + 1 : 0;
-      manifest.push({ id, path, url, kind, caption: caption || '', loc: loc || '', order });
-      await saveManifest(manifest, manifestPath);
+      await updateManifest(manifestPath, (manifest) => {
+        const order = manifest.length ? Math.max(...manifest.map((p) => p.order)) + 1 : 0;
+        manifest.push({ id, path, url, kind, caption: caption || '', loc: loc || '', order });
+        return { save: true };
+      });
       return res.status(200).json({ ok: true, id });
     }
 
@@ -196,10 +197,13 @@ export async function adminUploadHandler(req, res, storePrefix, manifestPath) {
   const id = crypto.randomBytes(8).toString('hex');
   const path = `${storePrefix}/photos/${id}.${ext}`;
   await putBlob(path, req, type || 'application/octet-stream');
-  const manifest = await loadManifest(manifestPath);
-  const order = manifest.length ? Math.max(...manifest.map((p) => p.order)) + 1 : 0;
-  manifest.push({ id, path, kind, caption: decodeURIComponent(req.headers['x-caption'] || ''), loc: decodeURIComponent(req.headers['x-loc'] || ''), order });
-  await saveManifest(manifest, manifestPath);
+  const caption = decodeURIComponent(req.headers['x-caption'] || '');
+  const loc = decodeURIComponent(req.headers['x-loc'] || '');
+  await updateManifest(manifestPath, (manifest) => {
+    const order = manifest.length ? Math.max(...manifest.map((p) => p.order)) + 1 : 0;
+    manifest.push({ id, path, kind, caption, loc, order });
+    return { save: true };
+  });
   return res.status(200).json({ ok: true, id });
 }
 
@@ -231,4 +235,91 @@ export async function streamEntry(req, res, entry) {
   res.setHeader('cache-control', 'private, no-store');
   const { Readable } = await import('node:stream');
   Readable.fromWeb(result.stream).pipe(res);
+}
+
+// ---- safe manifest updates ----
+// Read-modify-write with an ETag precondition: if another request changed
+// the manifest in between, the write is rejected and retried on fresh data,
+// so concurrent uploads/edits cannot overwrite each other. A failed read
+// aborts instead of being treated as an empty manifest (that would wipe it).
+export async function updateManifest(path, fn) {
+  for (let attempt = 0; attempt < 8; attempt++) {
+    const r = await get(path, { access: 'private', useCache: false });
+    let data = [];
+    let etag;
+    if (r && r.statusCode === 200) {
+      etag = r.blob.etag;
+      data = JSON.parse(await new Response(r.stream).text());
+      if (!Array.isArray(data)) throw new Error('manifest corrupt');
+    }
+    const { save, out } = await fn(data);
+    if (!save) return out;
+    try {
+      await put(path, JSON.stringify(data), {
+        access: 'private',
+        addRandomSuffix: false,
+        allowOverwrite: true,
+        contentType: 'application/json',
+        ...(etag ? { ifMatch: etag } : {}),
+      });
+      return out;
+    } catch (e) {
+      const msg = `${e && e.name} ${e && e.message}`;
+      if (/precondition/i.test(msg)) { await new Promise((ok) => setTimeout(ok, 60 + Math.random() * 120)); continue; }
+      throw e;
+    }
+  }
+  throw new Error('manifest busy, try again');
+}
+
+export async function adminPhotosHandler(req, res, manifestPath) {
+  const owner = requireOwner(req, res);
+  if (!owner) return;
+
+  try {
+    if (req.method === 'PATCH') {
+      const { id, caption, loc, direction, featured, order } = req.body || {};
+      const out = await updateManifest(manifestPath, (manifest) => {
+        if (Array.isArray(order)) {
+          order.forEach((oid, i) => {
+            const m = manifest.find((p) => p.id === oid);
+            if (m) m.order = i;
+          });
+          return { save: true, out: { status: 200, body: { ok: true } } };
+        }
+        const idx = manifest.findIndex((p) => p.id === id);
+        if (idx < 0) return { save: false, out: { status: 404, body: { error: 'not found' } } };
+        if (caption !== undefined) manifest[idx].caption = caption;
+        if (loc !== undefined) manifest[idx].loc = loc;
+        if (featured !== undefined) manifest[idx].featured = !!featured;
+        if (direction) {
+          const sorted = manifest.slice().sort((a, b) => a.order - b.order);
+          const pos = sorted.findIndex((p) => p.id === id);
+          const swapWith = direction === 'up' ? pos - 1 : pos + 1;
+          if (swapWith >= 0 && swapWith < sorted.length) {
+            const tmp = sorted[pos].order;
+            sorted[pos].order = sorted[swapWith].order;
+            sorted[swapWith].order = tmp;
+          }
+        }
+        return { save: true, out: { status: 200, body: { ok: true } } };
+      });
+      return res.status(out.status).json(out.body);
+    }
+
+    if (req.method === 'DELETE') {
+      const { id } = req.body || {};
+      const out = await updateManifest(manifestPath, (manifest) => {
+        const idx = manifest.findIndex((p) => p.id === id);
+        if (idx < 0) return { save: false, out: { status: 404, body: { error: 'not found' } } };
+        const [gone] = manifest.splice(idx, 1);
+        return { save: true, out: { status: 200, body: { ok: true }, blobPath: gone.path } };
+      });
+      if (out.blobPath) { try { await delBlob(out.blobPath); } catch { /* blob may already be gone */ } }
+      return res.status(out.status).json(out.body);
+    }
+  } catch (e) {
+    return res.status(503).json({ error: 'busy, try again' });
+  }
+  return res.status(405).json({ error: 'method not allowed' });
 }
