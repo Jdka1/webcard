@@ -286,6 +286,8 @@ a.row:focus-visible {
   gap: 0 22px;
 }
 
+#private-links { display: contents; }
+
 .links a {
   color: var(--muted);
   font-size: clamp(0.78rem, 1.8vw, 0.86rem);
