@@ -84,8 +84,27 @@
         <a href="https://github.com/Jdka1" target="_blank" rel="noreferrer">GitHub</a>
         <a href="https://www.linkedin.com/in/aryan-mehra/" target="_blank" rel="noreferrer">LinkedIn</a>
         <a href="https://www.youtube.com/@arymehr" target="_blank" rel="noreferrer">YouTube</a>
+        <span id="private-links" hidden></span>
       </nav>
 
     </main>
+    <script>
+      // Private boards, discreetly: logged out shows a quiet sign-in link;
+      // signed-in viewers get Photos; the owner also gets Vision + Manage.
+      // The server gates every route regardless of what is linked here.
+      (function () {
+        const host = document.getElementById('private-links');
+        const link = (href, text) => { const a = document.createElement('a'); a.href = href; a.textContent = text; return a; };
+        fetch('/api/memories/me').then((r) => (r.ok ? r.json() : null)).then((me) => {
+          host.hidden = false;
+          if (!me) { host.appendChild(link('/instagram/login.html?next=/', 'sign in')); return; }
+          host.appendChild(link('/instagram', 'Photos'));
+          if (me.role === 'owner') {
+            host.appendChild(link('/vision', 'Vision'));
+            host.appendChild(link('/instagram/admin.html', 'Manage'));
+          }
+        }).catch(() => {});
+      })();
+    </script>
   </body>
 </html>
