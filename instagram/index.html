@@ -17,7 +17,7 @@
 
     <header class="memories-head">
       <h1>memories_</h1>
-      <p class="memories-sub">Photos, people, places. <a href="/instagram/login.html" class="admin-link" onclick="fetch('/api/memories/logout',{method:'POST'}).finally(()=>location.href='/instagram/login.html');return false;">log out</a></p>
+      <p class="memories-sub">Photos, people, places. <a href="/instagram/admin.html" class="admin-link" id="manage-link" hidden>manage</a> <a href="/instagram/login.html" class="admin-link" onclick="fetch('/api/memories/logout',{method:'POST'}).finally(()=>location.href='/instagram/login.html');return false;">log out</a></p>
     </header>
 
     <main class="board" id="board" aria-label="Memory board">
