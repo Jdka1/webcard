@@ -286,7 +286,13 @@ a.row:focus-visible {
   gap: 0 22px;
 }
 
-#private-links { display: contents; }
+#private-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0 22px;
+  flex-basis: 100%;
+  margin-top: 14px;
+}
 
 .links a {
   color: var(--muted);
