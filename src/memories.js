@@ -11,7 +11,7 @@
 
   // Owner-only navigation: reveal the manage link when the session is the
   // owner. Viewers never see it; the server still gates admin either way.
-  fetch('/api/memories/me').then((r) => (r.ok ? r.json() : null)).then((me) => {
+  fetch('/api/memories/login').then((r) => (r.ok ? r.json() : null)).then((me) => {
     if (me && me.role === 'owner') {
       const m = document.getElementById('manage-link');
       if (m) m.hidden = false;

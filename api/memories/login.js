@@ -1,6 +1,13 @@
 import { loadUsers, verifyPassword, makeSession } from './_lib.js';
 
 export default async function handler(req, res) {
+  // GET = "who am I" for conditional UI (manage link, homepage links).
+  if (req.method === 'GET') {
+    const { requireActiveSession } = await import('./_lib.js');
+    const session = await requireActiveSession(req, res);
+    if (!session) return;
+    return res.status(200).json({ username: session.u, role: session.role });
+  }
   if (req.method !== 'POST') return res.status(405).json({ error: 'method not allowed' });
 
   const secret = process.env.MEMORIES_SESSION_SECRET;

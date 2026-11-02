@@ -95,7 +95,7 @@
       (function () {
         const host = document.getElementById('private-links');
         const link = (href, text) => { const a = document.createElement('a'); a.href = href; a.textContent = text; return a; };
-        fetch('/api/memories/me').then((r) => (r.ok ? r.json() : null)).then((me) => {
+        fetch('/api/memories/login').then((r) => (r.ok ? r.json() : null)).then((me) => {
           host.hidden = false;
           if (!me) { host.appendChild(link('/instagram/login.html?next=/', 'sign in')); return; }
           host.appendChild(link('/instagram', 'Photos'));
