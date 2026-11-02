@@ -21,7 +21,7 @@
     for (const p of photos) {
       const fig = document.createElement('figure');
       fig.className = 'tile';
-      if (p.featured) fig.classList.add('featured');
+      fig.dataset.feat = p.featured ? '1' : '';
       const img = document.createElement('img');
       img.src = p.src;
       img.alt = [p.caption, p.loc].filter(Boolean).join(' · ') || 'memory';
@@ -40,6 +40,17 @@
     }
     tiles = Array.from(document.querySelectorAll('.tile'));
     tiles.forEach((t, i) => t.addEventListener('click', () => open(i)));
+    // Sparse boards still fill the wall edge-to-edge: shrink the column
+    // count to the photo count, and only span featured tiles at full width.
+    const mq = window.matchMedia('(max-width: 720px)');
+    const layout = () => {
+      const max = mq.matches ? 2 : 3;
+      const cols = Math.max(1, Math.min(items.length, max));
+      board.style.gridTemplateColumns = `repeat(${cols}, 1fr)`;
+      tiles.forEach((t) => t.classList.toggle('featured', t.dataset.feat === '1' && cols === max));
+    };
+    layout();
+    mq.addEventListener('change', layout);
   }
 
   function open(i) {
