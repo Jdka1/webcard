@@ -310,6 +310,15 @@
     if (files.length) processFiles(files, all.filter((f) => !isMediaFile(f)), offered);
     else reportUnsupported(all);
   });
+  const videoInput = document.getElementById('video-file');
+  const pickVideo = document.getElementById('pick-video');
+  if (videoInput && pickVideo) {
+    pickVideo.addEventListener('click', (e) => { e.preventDefault(); videoInput.click(); });
+    videoInput.addEventListener('change', () => {
+      if (videoInput.files.length) processFiles(Array.from(videoInput.files).filter(isMediaFile), []);
+      videoInput.value = '';
+    });
+  }
   fileInput.addEventListener('change', () => {
     if (fileInput.files.length) {
       const all = Array.from(fileInput.files);
