@@ -157,6 +157,16 @@ export async function adminUploadHandler(req, res, storePrefix, manifestPath) {
     if (body.action === 'register') {
       const { path, url, contentType, caption, loc } = body;
       if (!path || !url) return res.status(400).json({ error: 'path and url required' });
+      // Only register blobs that actually live in our own store: the url is
+      // fetched later with the store token attached, so a foreign host here
+      // would leak it.
+      try {
+        const u = new URL(url);
+        if (u.protocol !== 'https:' || !u.hostname.endsWith('.blob.vercel-storage.com')) throw new Error('host');
+        if (decodeURIComponent(u.pathname).slice(1) !== path) throw new Error('path');
+      } catch {
+        return res.status(400).json({ error: 'url must be a blob store url matching path' });
+      }
       const kind = String(contentType || '').startsWith('video/') ? 'video' : 'image';
       const id = crypto.randomBytes(8).toString('hex');
       const manifest = await loadManifest(manifestPath);
