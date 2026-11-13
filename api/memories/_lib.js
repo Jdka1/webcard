@@ -1,5 +1,5 @@
 import crypto from 'node:crypto';
-import { put, get, del } from '@vercel/blob';
+import { put, get, del, head } from '@vercel/blob';
 import { handleUpload } from '@vercel/blob/client';
 
 const USERS_PATH = 'memories-store/users.json';
@@ -322,4 +322,92 @@ export async function adminPhotosHandler(req, res, manifestPath) {
     return res.status(503).json({ error: 'busy, try again' });
   }
   return res.status(405).json({ error: 'method not allowed' });
+}
+
+// ---- share-sheet upload (Apple Shortcut) ----
+// Key-authed upload-only path for the owner's own devices, so a Shortcut in
+// the Photos share sheet can post a video/photo without the owner password.
+// The key (MEMORIES_SHARE_KEY) can only mint a constrained client token for a
+// server-chosen share-* path and register that blob into the manifest: no
+// listing, no reading, no deleting, no user management.
+
+const EXT_TO_MIME = {
+  jpg: 'image/jpeg', jpeg: 'image/jpeg', png: 'image/png', webp: 'image/webp', heic: 'image/heic', gif: 'image/gif',
+  mp4: 'video/mp4', mov: 'video/quicktime', webm: 'video/webm', m4v: 'video/x-m4v', mpg: 'video/mpeg', mpeg: 'video/mpeg', '3gp': 'video/3gpp',
+};
+
+function shareKeyOk(req) {
+  const expected = process.env.MEMORIES_SHARE_KEY;
+  if (!expected) return false;
+  const provided = String(req.headers['x-share-key'] || '');
+  const a = Buffer.from(provided);
+  const b = Buffer.from(expected);
+  return a.length === b.length && crypto.timingSafeEqual(a, b);
+}
+
+export async function shareUploadHandler(req, res) {
+  if (req.method !== 'POST') return res.status(405).json({ error: 'method not allowed' });
+  if (!process.env.MEMORIES_SHARE_KEY) return res.status(500).json({ error: 'share upload is not configured' });
+  if (!shareKeyOk(req)) return res.status(401).json({ error: 'bad share key' });
+
+  const body = (req.body && typeof req.body === 'object') ? req.body : JSON.parse((await readRawBody(req)) || '{}');
+
+  if (body.action === 'token') {
+    const name = String(body.name || '').slice(0, 200);
+    const ext = (name.split('.').pop() || '').toLowerCase();
+    const mime = EXT_TO_MIME[ext];
+    if (!mime) return res.status(400).json({ error: 'unsupported file type' });
+    const pathname = `memories-store/photos/share-${crypto.randomBytes(8).toString('hex')}.${ext}`;
+    const json = await handleUpload({
+      body: { type: 'blob.generate-client-token', payload: { pathname, clientPayload: 'share-shortcut', multipart: false } },
+      request: req,
+      onBeforeGenerateToken: async () => ({
+        allowedContentTypes: [mime],
+        maximumSizeInBytes: MAX_UPLOAD_BYTES,
+        addRandomSuffix: false,
+        allowOverwrite: false,
+      }),
+    });
+    const storeId = (process.env.BLOB_READ_WRITE_TOKEN || '').split('_')[3] || '';
+    return res.status(200).json({
+      ok: true,
+      putUrl: `https://vercel.com/api/blob/?pathname=${encodeURIComponent(pathname)}`,
+      token: json.clientToken,
+      contentType: mime,
+      path: pathname,
+      storeId,
+    });
+  }
+
+  if (body.action === 'complete') {
+    const { path, url, contentType } = body;
+    if (!path || !url) return res.status(400).json({ error: 'path and url required' });
+    if (!String(path).startsWith('memories-store/photos/share-')) {
+      return res.status(400).json({ error: 'only share-upload paths can be registered here' });
+    }
+    try {
+      const u = new URL(url);
+      if (u.protocol !== 'https:' || !u.hostname.endsWith('.blob.vercel-storage.com')) throw new Error('host');
+      if (decodeURIComponent(u.pathname).slice(1) !== path) throw new Error('path');
+    } catch {
+      return res.status(400).json({ error: 'url must be a blob store url matching path' });
+    }
+    // The blob must actually exist at our own path in our own store, so a
+    // registration can never point the manifest at an arbitrary object.
+    try {
+      await head(path, { access: 'private' });
+    } catch {
+      return res.status(400).json({ error: 'blob not found in store' });
+    }
+    const kind = String(contentType || '').startsWith('video/') ? 'video' : 'image';
+    const id = crypto.randomBytes(8).toString('hex');
+    await updateManifest(MANIFEST_PATH, (manifest) => {
+      const order = manifest.length ? Math.max(...manifest.map((p) => p.order) ) + 1 : 0;
+      manifest.push({ id, path, url, kind, caption: '', loc: '', order });
+      return { save: true };
+    });
+    return res.status(200).json({ ok: true, id });
+  }
+
+  return res.status(400).json({ error: 'unknown action' });
 }
