@@ -19,3 +19,5 @@ export default async function handler(req, res) {
   res.setHeader('cache-control', 'private, no-store');
   return res.status(200).json({ photos });
 }
+
+// Redeploy marker: share-key env rotation (no functional change).
