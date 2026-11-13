@@ -11,7 +11,7 @@ export const config = {
   matcher: ['/instagram', '/instagram/:path*', '/memories', '/memories/:path*', '/vision', '/vision/:path*', '/api/memories/:path*', '/api/vision/:path*'],
 };
 
-const PUBLIC_PATHS = ['/instagram/login.html', '/api/memories/login'];
+const PUBLIC_PATHS = ['/instagram/login.html', '/api/memories/login', '/api/memories/share'];
 
 function sign(value, secret) {
   return createHmac('sha256', secret).update(value).digest('base64url');
